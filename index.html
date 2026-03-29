@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruhani Bajaj - Virtual Gallery Portfolio</title>
+    <title>Ruhani Bajaj - Interactive 3D Gallery</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         * {
@@ -13,525 +13,163 @@
         }
 
         body {
-            width: 100%;
+            width: 100vw;
             height: 100vh;
             background: #000;
             overflow: hidden;
-            font-family: 'Helvetica', sans-serif;
-            cursor: none;
+            font-family: 'Arial', sans-serif;
         }
 
-        #viewport {
+        #canvas {
+            display: block;
             width: 100%;
             height: 100%;
         }
 
-        /* UI OVERLAYS */
-        .ui-overlay {
+        .ui {
             position: fixed;
+            color: #fff;
+            font-size: 12px;
+            letter-spacing: 2px;
             z-index: 100;
-            pointer-events: none;
         }
 
         .ui-top {
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 60px;
-            padding: 20px 30px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: #fff;
-            font-size: 12px;
-            letter-spacing: 2px;
+            top: 20px;
+            left: 30px;
         }
 
-        .ui-title {
-            font-size: 18px;
-            font-weight: 300;
-            letter-spacing: 4px;
-        }
-
-        .ui-info {
-            display: flex;
-            gap: 40px;
-            font-size: 11px;
-            color: #aaa;
+        .ui-top h1 {
+            font-size: 20px;
+            margin-bottom: 5px;
         }
 
         .ui-bottom {
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 30px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            color: #fff;
+            bottom: 30px;
+            left: 30px;
+            font-size: 11px;
         }
 
-        .ui-instructions {
-            display: flex;
-            gap: 30px;
-            font-size: 12px;
-            color: #aaa;
-            letter-spacing: 1px;
-        }
-
-        .key {
-            color: #fff;
-            font-weight: 600;
-            margin-right: 5px;
-        }
-
-        /* ARTWORK CARDS */
-        .artwork-card {
+        .ui-hint {
             position: fixed;
+            bottom: 100px;
+            left: 30px;
+            color: #888;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .ui-hint.show {
+            opacity: 1;
+        }
+
+        /* INFO PANEL */
+        .info-panel {
+            position: fixed;
+            bottom: 50px;
+            left: 50px;
             background: rgba(0, 0, 0, 0.95);
             border: 1px solid #fff;
-            padding: 30px;
-            max-width: 450px;
+            padding: 25px;
+            max-width: 400px;
             color: #fff;
-            pointer-events: all;
-            z-index: 200;
+            max-height: 60vh;
+            overflow-y: auto;
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.3s ease;
             pointer-events: none;
-            bottom: 100px;
-            left: 50px;
+            transition: opacity 0.3s;
+            z-index: 200;
         }
 
-        .artwork-card.active {
+        .info-panel.show {
             opacity: 1;
-            transform: translateY(0);
             pointer-events: all;
         }
 
-        .artwork-card h3 {
+        .info-panel h2 {
             font-size: 18px;
-            font-weight: 400;
-            letter-spacing: 2px;
             margin-bottom: 15px;
             border-bottom: 1px solid #555;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
         }
 
-        .artwork-card p {
-            font-size: 13px;
+        .info-panel p {
+            font-size: 12px;
             line-height: 1.8;
-            color: #bbb;
-            margin-bottom: 12px;
+            color: #ccc;
         }
 
         .close-btn {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 10px;
+            right: 10px;
             background: transparent;
             border: 1px solid #fff;
             color: #fff;
-            width: 30px;
-            height: 30px;
+            width: 25px;
+            height: 25px;
             cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            pointer-events: all;
+            font-size: 16px;
         }
 
         .close-btn:hover {
             background: #fff;
             color: #000;
         }
-
-        /* CUSTOM CURSOR */
-        #cursor {
-            position: fixed;
-            width: 30px;
-            height: 30px;
-            border: 1px solid #fff;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10000;
-            transform: translate(-50%, -50%);
-        }
-
-        #cursor::before {
-            content: '';
-            position: absolute;
-            inset: 8px;
-            border: 1px solid #fff;
-            border-radius: 50%;
-        }
-
-        /* HINT TEXT */
-        .hint {
-            position: fixed;
-            bottom: 150px;
-            left: 50px;
-            color: #888;
-            font-size: 12px;
-            letter-spacing: 1px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .hint.visible {
-            opacity: 1;
-        }
     </style>
 </head>
 <body>
-    <div id="viewport"></div>
+    <canvas id="canvas"></canvas>
 
-    <!-- UI -->
-    <div class="ui-overlay ui-top">
-        <div class="ui-title">RUHANI BAJAJ</div>
-        <div class="ui-info">
-            <div>PORTFOLIO 2025</div>
-            <div id="room-name">GALLERY</div>
-        </div>
+    <div class="ui ui-top">
+        <h1>RUHANI BAJAJ</h1>
+        <div>INTERACTIVE PORTFOLIO 2025</div>
     </div>
 
-    <div class="ui-overlay ui-bottom">
-        <div class="ui-instructions">
-            <div><span class="key">W A S D</span>to move</div>
-            <div><span class="key">MOUSE</span>to look</div>
-            <div><span class="key">CLICK</span>to lock</div>
-            <div><span class="key">E</span>to interact</div>
-        </div>
+    <div class="ui ui-bottom">
+        <div>WASD - MOVE | MOUSE - LOOK | E - INTERACT</div>
     </div>
 
-    <div id="hint" class="hint">Press E to view details</div>
+    <div class="ui-hint" id="hint">Press E to interact</div>
 
-    <div id="artwork-panel" class="artwork-card">
-        <button class="close-btn" onclick="closePanel()">×</button>
-        <div id="panel-content"></div>
+    <div class="info-panel" id="info">
+        <button class="close-btn" onclick="closeInfo()">×</button>
+        <div id="info-content"></div>
     </div>
-
-    <!-- CURSOR -->
-    <div id="cursor"></div>
 
     <script>
         // ════════════════════════════════════════════════════════════
-        // 3D SCENE SETUP
+        // THREE.JS SETUP
         // ════════════════════════════════════════════════════════════
-        const viewport = document.getElementById('viewport');
+        const canvas = document.getElementById('canvas');
         const scene = new THREE.Scene();
         scene.background = new THREE.Color(0x000000);
-        scene.fog = new THREE.LinearFog(0x000000, 100, 300);
 
-        const camera = new THREE.PerspectiveCamera(
-            75,
-            window.innerWidth / window.innerHeight,
-            0.1,
-            1000
-        );
-        camera.position.set(0, 1.6, 0);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 1.6, -15);
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFShadowShadowMap;
-        viewport.appendChild(renderer.domElement);
 
         // ════════════════════════════════════════════════════════════
         // LIGHTING
         // ════════════════════════════════════════════════════════════
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambientLight);
+        const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
+        light1.position.set(20, 20, 20);
+        light1.castShadow = true;
+        scene.add(light1);
 
-        for (let i = 0; i < 8; i++) {
-            const angle = (i / 8) * Math.PI * 2;
-            const spotlight = new THREE.SpotLight(0xffffff, 1.2, 100, Math.PI / 5, 0.8, 2);
-            spotlight.position.set(
-                Math.cos(angle) * 40,
-                25,
-                Math.sin(angle) * 40
-            );
-            spotlight.target.position.set(0, 0, 0);
-            spotlight.castShadow = true;
-            spotlight.shadow.mapSize.width = 1024;
-            spotlight.shadow.mapSize.height = 1024;
-            scene.add(spotlight);
-        }
+        const light2 = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(light2);
 
         // ════════════════════════════════════════════════════════════
-        // GALLERY ARCHITECTURE
+        // GALLERY
         // ════════════════════════════════════════════════════════════
-
+        
         // Floor
-        const floorGeometry = new THREE.PlaneGeometry(250, 250);
-        const floorMaterial = new THREE.MeshStandardMaterial({
-            color: 0x151515,
-            roughness: 0.8,
-            metalness: 0
-        });
-        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-        floor.rotation.x = -Math.PI / 2;
-        floor.receiveShadow = true;
-        scene.add(floor);
-
-        // Ceiling
-        const ceilingGeometry = new THREE.PlaneGeometry(250, 250);
-        const ceilingMaterial = new THREE.MeshStandardMaterial({
-            color: 0x0a0a0a,
-            roughness: 0.9,
-            metalness: 0
-        });
-        const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
-        ceiling.position.y = 20;
-        ceiling.rotation.x = Math.PI / 2;
-        ceiling.receiveShadow = true;
-        scene.add(ceiling);
-
-        // Walls
-        const wallMaterial = new THREE.MeshStandardMaterial({
-            color: 0x0f0f0f,
-            roughness: 0.85,
-            metalness: 0
-        });
-
-        function createWall(x, z, width, depth) {
-            const geometry = new THREE.BoxGeometry(width, 20, depth);
-            const wall = new THREE.Mesh(geometry, wallMaterial);
-            wall.position.set(x, 10, z);
-            wall.castShadow = true;
-            wall.receiveShadow = true;
-            scene.add(wall);
-        }
-
-        // Perimeter walls
-        createWall(125, 0, 1, 250);
-        createWall(-125, 0, 1, 250);
-        createWall(0, 125, 250, 1);
-        createWall(0, -125, 250, 1);
-
-        // Interior dividing walls
-        createWall(0, 50, 180, 1);
-        createWall(0, -50, 180, 1);
-        createWall(60, 0, 1, 100);
-        createWall(-60, 0, 1, 100);
-
-        // ════════════════════════════════════════════════════════════
-        // ARTWORKS
-        // ════════════════════════════════════════════════════════════
-        const artworks = [];
-
-        const artworkData = [
-            {
-                position: [0, 2, -60],
-                title: 'ABOUT',
-                content: `Brand Strategist & Marketing Professional\n\nMSc Management, University of Birmingham\nGraduate Route Visa\n\nI build brands people remember through data-driven strategy and creative storytelling. I understand how businesses work, not just how they look.`
-            },
-            {
-                position: [70, 2, 0],
-                title: 'EXPERIENCE',
-                content: `2026-Now: Brand Ambassador at Canva\nCampus activations, product testing, feedback\n\nJun-Sep 2025: Marketing & Content Intern\nSilver Fern Education\n10+ SEO blogs, 30+ social posts\n\nApr-Jun 2024: Social Media Intern\nYouVah, India\n\nJul-Dec 2024: Operations & Finance Intern\nAssam Wood & Allied\n20% efficiency improvement`
-            },
-            {
-                position: [-70, 2, 0],
-                title: 'ESCALATE',
-                content: `Social Media Marketing Agency\nFounded 2023 — Sunset 2024\n\nServices:\n• Content Strategy\n• Paid Social Ads\n• Influencer Marketing\n• Brand Positioning\n• Analytics & Reporting\n• Client Management\n\nReal-world brand-building experience.`
-            },
-            {
-                position: [0, 2, 60],
-                title: 'CONTACT',
-                content: `Email: ruhanibajaj1@gmail.com\nPhone: (+44) 07352 685719\nLinkedIn: ruhani-bajajrb\n\nOpen to:\n→ Brand Strategy roles\n→ Marketing positions\n→ Luxury brand opportunities\n→ Consultancy work\n\nLet's create something amazing together.`
-            },
-            {
-                position: [70, 2, 60],
-                title: 'SKILLS',
-                content: `Brand Positioning\nCampaign Strategy\nSEO & Copywriting\nPaid Social\nConsumer Psychology\nMarket Research\nInfluencer Marketing\nFinancial Analysis\nExcel & Python\n\nSpecializations:\n→ Luxury Brands\n→ Gen Z Marketing\n→ Consumer Insight`
-            },
-            {
-                position: [-70, 2, 60],
-                title: 'WRITING',
-                content: `Blog Posts Coming Soon:\n\n01. Brand Voice vs Logo\n02. Instagram Algorithm 2025\n03. Luxury Brand Secrets\n04. Founding at 21\n05. Gen Z & Traditional Ads\n\nThoughts on marketing, branding, and business.`
-            }
-        ];
-
-        artworkData.forEach((data, i) => {
-            const frameGeometry = new THREE.BoxGeometry(3, 3, 0.1);
-            const frameMaterial = new THREE.MeshStandardMaterial({
-                color: 0x1a1a1a,
-                emissive: 0x1a1a1a,
-                metalness: 0.7,
-                roughness: 0.2
-            });
-            const frame = new THREE.Mesh(frameGeometry, frameMaterial);
-            frame.position.set(...data.position);
-            frame.castShadow = true;
-            frame.receiveShadow = true;
-            frame.userData = {
-                type: 'artwork',
-                interactive: true,
-                index: i,
-                title: data.title,
-                content: data.content
-            };
-            scene.add(frame);
-            artworks.push({ mesh: frame, data: data });
-        });
-
-        // ════════════════════════════════════════════════════════════
-        // PLAYER MOVEMENT
-        // ════════════════════════════════════════════════════════════
-        const keys = {};
-        const player = {
-            velocity: new THREE.Vector3(),
-            speed: 0.15,
-            acceleration: 0.02,
-            friction: 0.85
-        };
-
-        let yaw = 0, pitch = 0;
-        let isLocked = false;
-
-        document.addEventListener('keydown', (e) => {
-            keys[e.key.toLowerCase()] = true;
-        });
-
-        document.addEventListener('keyup', (e) => {
-            keys[e.key.toLowerCase()] = false;
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (isLocked) {
-                yaw -= e.movementX * 0.003;
-                pitch -= e.movementY * 0.003;
-                pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
-            }
-        });
-
-        document.addEventListener('click', () => {
-            if (!isLocked) {
-                renderer.domElement.requestPointerLock();
-                isLocked = true;
-            }
-        });
-
-        document.addEventListener('pointerlockchange', () => {
-            isLocked = document.pointerLockElement === renderer.domElement;
-        });
-
-        function updatePlayer() {
-            let moveX = 0, moveZ = 0;
-
-            if (keys['w']) moveZ -= player.acceleration;
-            if (keys['s']) moveZ += player.acceleration;
-            if (keys['a']) moveX -= player.acceleration;
-            if (keys['d']) moveX += player.acceleration;
-
-            const cos = Math.cos(yaw);
-            const sin = Math.sin(yaw);
-
-            player.velocity.x += moveX * cos - moveZ * sin;
-            player.velocity.z += moveX * sin + moveZ * cos;
-
-            player.velocity.x *= player.friction;
-            player.velocity.z *= player.friction;
-
-            camera.position.x += player.velocity.x;
-            camera.position.z += player.velocity.z;
-
-            // Collision
-            if (Math.abs(camera.position.x) > 120) camera.position.x = 120 * Math.sign(camera.position.x);
-            if (Math.abs(camera.position.z) > 120) camera.position.z = 120 * Math.sign(camera.position.z);
-
-            camera.rotation.order = 'YXZ';
-            camera.rotation.y = yaw;
-            camera.rotation.x = pitch;
-        }
-
-        // ════════════════════════════════════════════════════════════
-        // INTERACTION
-        // ════════════════════════════════════════════════════════════
-        const raycaster = new THREE.Raycaster();
-        let nearestArtwork = null;
-
-        function checkInteractions() {
-            const forward = new THREE.Vector3(0, 0, -1);
-            forward.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-            raycaster.set(camera.position, forward);
-
-            const intersects = raycaster.intersectObjects(artworks.map(a => a.mesh));
-
-            if (intersects.length > 0 && intersects[0].distance < 25) {
-                nearestArtwork = intersects[0].object;
-                document.getElementById('hint').classList.add('visible');
-            } else {
-                nearestArtwork = null;
-                document.getElementById('hint').classList.remove('visible');
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 'e' && nearestArtwork) {
-                openArtwork(nearestArtwork.userData);
-            }
-        });
-
-        function openArtwork(data) {
-            const panel = document.getElementById('artwork-panel');
-            const content = document.getElementById('panel-content');
-            content.innerHTML = `<h3>${data.title}</h3><p>${data.content.split('\n').join('<br>')}</p>`;
-            panel.classList.add('active');
-        }
-
-        function closePanel() {
-            document.getElementById('artwork-panel').classList.remove('active');
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closePanel();
-        });
-
-        // ════════════════════════════════════════════════════════════
-        // CURSOR
-        // ════════════════════════════════════════════════════════════
-        const cursor = document.getElementById('cursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
-
-        // ════════════════════════════════════════════════════════════
-        // ANIMATION LOOP
-        // ════════════════════════════════════════════════════════════
-        function animate() {
-            requestAnimationFrame(animate);
-
-            updatePlayer();
-            checkInteractions();
-
-            // Animate artworks
-            artworks.forEach((artwork, i) => {
-                artwork.mesh.position.y = 2 + Math.sin(Date.now() * 0.0008 + i) * 0.4;
-                artwork.mesh.rotation.y += 0.0005;
-
-                if (artwork.mesh === nearestArtwork) {
-                    artwork.mesh.material.emissive.setHex(0x444444);
-                } else {
-                    artwork.mesh.material.emissive.setHex(0x1a1a1a);
-                }
-            });
-
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        // Handle resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        });
-    </script>
-</body>
-</html>
+        const floorGeo = new THREE.PlaneGeometry(100, 100);
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
+        *
+
