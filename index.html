@@ -155,16 +155,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
+            z-index: 99999;
             flex-direction: column;
             gap: 30px;
             color: #fff;
+            transition: opacity 0.8s ease-out, visibility 0.8s ease-out;
+            opacity: 1;
+            visibility: visible;
         }
 
-        #loading.hidden {
-            pointer-events: none;
+        #loading.fade-out {
             opacity: 0;
-            transition: opacity 0.8s ease;
+            visibility: hidden;
         }
 
         .loading-text {
@@ -265,7 +267,7 @@
         <div id="panel-content"></div>
     </div>
 
-    <!-- LOADING -->
+    <!-- LOADING - WILL AUTO HIDE -->
     <div id="loading">
         <div class="loading-text">INITIALIZING GALLERY</div>
         <div class="loading-bar"></div>
@@ -275,7 +277,10 @@
     <div id="cursor"></div>
 
     <script>
-        console.log('Script started');
+        // HIDE LOADING IMMEDIATELY
+        setTimeout(() => {
+            document.getElementById('loading').classList.add('fade-out');
+        }, 2000);
 
         // ════════════════════════════════════════════════════════════
         // 3D SCENE SETUP
@@ -300,15 +305,12 @@
         renderer.shadowMap.type = THREE.PCFShadowShadowMap;
         viewport.appendChild(renderer.domElement);
 
-        console.log('Renderer initialized');
-
         // ════════════════════════════════════════════════════════════
         // LIGHTING
         // ════════════════════════════════════════════════════════════
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
         scene.add(ambientLight);
 
-        // Spotlights
         for (let i = 0; i < 8; i++) {
             const angle = (i / 8) * Math.PI * 2;
             const spotlight = new THREE.SpotLight(0xffffff, 1.2, 100, Math.PI / 5, 0.8, 2);
@@ -323,8 +325,6 @@
             spotlight.shadow.mapSize.height = 1024;
             scene.add(spotlight);
         }
-
-        console.log('Lighting added');
 
         // ════════════════════════════════════════════════════════════
         // GALLERY ARCHITECTURE
@@ -382,8 +382,6 @@
         createWall(0, -50, 180, 1);
         createWall(60, 0, 1, 100);
         createWall(-60, 0, 1, 100);
-
-        console.log('Architecture added');
 
         // ════════════════════════════════════════════════════════════
         // ARTWORKS
@@ -445,8 +443,6 @@
             scene.add(frame);
             artworks.push({ mesh: frame, data: data });
         });
-
-        console.log('Artworks added: ' + artworks.length);
 
         // ════════════════════════════════════════════════════════════
         // PLAYER MOVEMENT
@@ -594,17 +590,7 @@
             renderer.render(scene, camera);
         }
 
-        console.log('Starting animation loop');
         animate();
-
-        // ════════════════════════════════════════════════════════════
-        // HIDE LOADING
-        // ════════════════════════════════════════════════════════════
-        setTimeout(() => {
-            const loading = document.getElementById('loading');
-            loading.classList.add('hidden');
-            console.log('Loading screen hidden');
-        }, 2000);
 
         // Handle resize
         window.addEventListener('resize', () => {
@@ -612,8 +598,6 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
-
-        console.log('Script fully loaded');
     </script>
 </body>
 </html>
