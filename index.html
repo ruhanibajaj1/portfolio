@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruhani Bajaj - Interactive 3D Portfolio</title>
+    <title>Ruhani Bajaj - Virtual Gallery Portfolio</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
@@ -16,475 +16,539 @@
         body {
             width: 100%;
             height: 100vh;
-            background: #0a0a0a;
+            background: #000;
             overflow: hidden;
-            font-family: 'Arial', sans-serif;
+            font-family: 'Helvetica', sans-serif;
             cursor: none;
         }
 
-        #canvas {
-            display: block;
+        #viewport {
             width: 100%;
             height: 100%;
         }
 
-        /* ─────── HUD (Heads Up Display) ─────── */
-        .hud {
+        /* UI OVERLAYS */
+        .ui-overlay {
             position: fixed;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .ui-top {
             top: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            pointer-events: none;
-            z-index: 100;
-        }
-
-        .hud-top {
-            position: absolute;
-            top: 2rem;
-            left: 2rem;
-            right: 2rem;
+            height: 60px;
+            padding: 20px 30px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
+            color: #fff;
+            font-size: 12px;
             letter-spacing: 2px;
-            text-transform: uppercase;
         }
 
-        .hud-name {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #00ff88;
+        .ui-title {
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 4px;
         }
 
-        .hud-stats {
+        .ui-info {
             display: flex;
-            gap: 2rem;
+            gap: 40px;
+            font-size: 11px;
+            color: #aaa;
         }
 
-        .stat {
+        .ui-bottom {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px;
+            background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+            color: #fff;
+        }
+
+        .ui-instructions {
             display: flex;
-            gap: 0.5rem;
+            gap: 30px;
+            font-size: 12px;
+            color: #aaa;
+            letter-spacing: 1px;
         }
 
-        .stat-label {
-            color: #00ff00;
+        .key {
+            color: #fff;
+            font-weight: 600;
+            margin-right: 5px;
         }
 
-        .stat-value {
-            color: #ffff00;
-        }
-
-        /* ─────── INTERACTION PROMPTS ─────── */
-        .interaction-prompt {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
+        /* FLOATING TEXT */
+        .floating-text {
+            position: fixed;
+            color: #fff;
+            font-size: 14px;
+            pointer-events: none;
             text-align: center;
-            animation: blink 1s infinite;
-            pointer-events: none;
+            z-index: 150;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        .floating-text.visible {
+            animation: float-in 0.6s ease-out;
         }
 
-        .interaction-prompt.hidden {
-            display: none;
+        @keyframes float-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* ─────── MINIMAP ─────── */
-        .minimap {
+        /* ARTWORK CARDS */
+        .artwork-card {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 150px;
-            height: 150px;
-            border: 2px solid #00ff00;
-            background: rgba(0, 255, 0, 0.05);
-            pointer-events: none;
-            z-index: 200;
-        }
-
-        .minimap-player {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: #ffff00;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px #ffff00;
-        }
-
-        /* ─────── MODAL ─────── */
-        .modal {
-            position: fixed;
-            inset: 0;
             background: rgba(0, 0, 0, 0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 300;
+            border: 1px solid #fff;
+            padding: 30px;
+            max-width: 450px;
+            color: #fff;
+            pointer-events: all;
+            z-index: 200;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .artwork-card.active {
+            opacity: 1;
+            transform: translateY(0);
             pointer-events: all;
         }
 
-        .modal.active {
-            display: flex;
+        .artwork-card h3 {
+            font-size: 18px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #555;
+            padding-bottom: 15px;
         }
 
-        .modal-content {
-            background: #0a0a0a;
-            border: 2px solid #00ff00;
-            padding: 3rem;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        .artwork-card p {
+            font-size: 13px;
+            line-height: 1.8;
+            color: #bbb;
+            margin-bottom: 12px;
         }
 
-        .modal-content h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #00ff88;
-        }
-
-        .modal-content p {
-            margin-bottom: 1rem;
-            line-height: 1.6;
-            font-size: 0.9rem;
-        }
-
-        .modal-close {
+        .close-btn {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 40px;
-            height: 40px;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: 1px solid #fff;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: transparent;
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            cursor: pointer;
-            font-size: 1.5rem;
-            transition: all 0.3s;
+            transition: all 0.2s;
+            pointer-events: all;
         }
 
-        .modal-close:hover {
-            background: #00ff00;
-            color: #0a0a0a;
+        .close-btn:hover {
+            background: #fff;
+            color: #000;
         }
 
-        /* ─────── CURSOR ─────── */
-        #custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #00ff00;
-            pointer-events: none;
-            z-index: 10000;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 10px #00ff00;
-        }
-
-        #cursor-center {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #00ff00;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-        }
-
-        /* ─────── LOADING SCREEN ─────── */
+        /* LOADING */
         #loading {
             position: fixed;
             inset: 0;
-            background: #0a0a0a;
+            background: #000;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
-            color: #00ff00;
-            font-family: 'Courier New', monospace;
-            gap: 2rem;
+            z-index: 999;
+            flex-direction: column;
+            gap: 30px;
+            color: #fff;
         }
 
         #loading.hidden {
-            display: none;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.6s ease;
         }
 
         .loading-text {
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            animation: flicker 0.3s infinite;
+            font-size: 14px;
+            letter-spacing: 3px;
+            animation: pulse 1s infinite;
         }
 
-        @keyframes flicker {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         .loading-bar {
-            width: 300px;
-            height: 2px;
-            background: rgba(0, 255, 0, 0.2);
+            width: 200px;
+            height: 1px;
+            background: #333;
             position: relative;
             overflow: hidden;
         }
 
-        .loading-bar-fill {
+        .loading-bar::after {
+            content: '';
+            position: absolute;
             height: 100%;
-            background: linear-gradient(90deg, #00ff00, #00ff88);
-            width: 0%;
-            box-shadow: 0 0 10px #00ff00;
+            background: #fff;
+            width: 30%;
+            animation: loading-progress 2s infinite;
+        }
+
+        @keyframes loading-progress {
+            0% { left: -30%; }
+            100% { left: 100%; }
+        }
+
+        /* CUSTOM CURSOR */
+        #cursor {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #fff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transform: translate(-50%, -50%);
+        }
+
+        #cursor::before {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border: 1px solid #fff;
+            border-radius: 50%;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
+    <div id="viewport"></div>
 
-    <!-- HUD -->
-    <div class="hud">
-        <div class="hud-top">
-            <div class="hud-name">RUHANI.BAJAJ</div>
-            <div class="hud-stats">
-                <div class="stat">
-                    <span class="stat-label">LOCATION:</span>
-                    <span class="stat-value" id="location">GALLERY_01</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-label">MODE:</span>
-                    <span class="stat-value">INTERACTIVE</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="interaction-prompt" id="prompt">
-            PRESS [E] TO INTERACT
-        </div>
-
-        <div class="minimap" id="minimap">
-            <div class="minimap-player"></div>
+    <!-- UI -->
+    <div class="ui-overlay ui-top">
+        <div class="ui-title">RUHANI BAJAJ</div>
+        <div class="ui-info">
+            <div>PORTFOLIO 2025</div>
+            <div id="room-name">ENTRANCE</div>
         </div>
     </div>
 
-    <!-- MODAL -->
-    <div class="modal" id="modal">
-        <button class="modal-close" onclick="closeModal()">&times;</button>
-        <div class="modal-content" id="modal-content"></div>
+    <div class="ui-overlay ui-bottom">
+        <div class="ui-instructions">
+            <div><span class="key">WASD</span> to navigate</div>
+            <div><span class="key">MOUSE</span> to look</div>
+            <div><span class="key">CLICK</span> to interact</div>
+        </div>
     </div>
 
-    <!-- LOADING SCREEN -->
+    <div id="artwork-panel" class="artwork-card">
+        <button class="close-btn" onclick="closePanel()">×</button>
+        <div id="panel-content"></div>
+    </div>
+
+    <!-- LOADING -->
     <div id="loading">
-        <div class="loading-text">INITIALIZING PORTFOLIO...</div>
-        <div class="loading-bar">
-            <div class="loading-bar-fill" id="loading-bar"></div>
-        </div>
+        <div class="loading-text">INITIALIZING GALLERY</div>
+        <div class="loading-bar"></div>
     </div>
 
     <!-- CURSOR -->
-    <div id="custom-cursor">
-        <div id="cursor-center"></div>
-    </div>
+    <div id="cursor"></div>
 
     <script>
         // ════════════════════════════════════════════════════════════
-        // THREE.JS SETUP
+        // 3D SCENE SETUP
         // ════════════════════════════════════════════════════════════
+        const viewport = document.getElementById('viewport');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0a0a0a);
-        scene.fog = new THREE.Fog(0x0a0a0a, 100, 1000);
+        scene.background = new THREE.Color(0x000000);
+        scene.fog = new THREE.LinearFog(0x000000, 50, 200);
 
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 1.6, 5);
+        const camera = new THREE.PerspectiveCamera(
+            75,
+            window.innerWidth / window.innerHeight,
+            0.1,
+            1000
+        );
+        camera.position.set(0, 1.6, 0);
 
-        const canvas = document.getElementById('canvas');
-        const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+        viewport.appendChild(renderer.domElement);
 
         // ════════════════════════════════════════════════════════════
-        // LIGHTING
+        // LIGHTING - MUSEUM STYLE
         // ════════════════════════════════════════════════════════════
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
         scene.add(ambientLight);
 
-        const directionalLight = new THREE.DirectionalLight(0x00ff88, 1);
-        directionalLight.position.set(10, 10, 10);
-        directionalLight.castShadow = true;
-        directionalLight.shadow.camera.left = -50;
-        directionalLight.shadow.camera.right = 50;
-        directionalLight.shadow.camera.top = 50;
-        directionalLight.shadow.camera.bottom = -50;
-        scene.add(directionalLight);
-
-        const pointLight = new THREE.PointLight(0x00ff00, 1, 50);
-        pointLight.position.set(0, 3, 0);
-        scene.add(pointLight);
-
-        // ════════════════════════════════════════════════════════════
-        // GALLERY ROOMS
-        // ════════════════════════════════════════════════════════════
-        const gallery = {
-            rooms: [],
-            exhibits: []
-        };
-
-        function createRoom(x, z, width, depth, name, color) {
-            const geometry = new THREE.BoxGeometry(width, 5, depth);
-            const material = new THREE.MeshStandardMaterial({
-                color: color,
-                emissive: color,
-                emissiveIntensity: 0.1,
-                wireframe: false,
-                roughness: 0.7
-            });
-
-            const room = new THREE.Mesh(geometry, material);
-            room.position.set(x, 2.5, z);
-            room.castShadow = true;
-            room.receiveShadow = true;
-            room.name = name;
-            room.userData = { type: 'room', interactive: false };
-
-            scene.add(room);
-            gallery.rooms.push(room);
-
-            // Add walls
-            const wallMaterial = new THREE.MeshStandardMaterial({
-                color: 0x1a1a1a,
-                emissive: 0x00ff00,
-                emissiveIntensity: 0.05,
-                roughness: 0.8
-            });
-
-            // Front wall
-            const frontWall = new THREE.Mesh(new THREE.BoxGeometry(width, 5, 0.2), wallMaterial);
-            frontWall.position.set(x, 2.5, z - depth / 2);
-            frontWall.castShadow = true;
-            frontWall.receiveShadow = true;
-            scene.add(frontWall);
-
-            // Back wall
-            const backWall = new THREE.Mesh(new THREE.BoxGeometry(width, 5, 0.2), wallMaterial);
-            backWall.position.set(x, 2.5, z + depth / 2);
-            backWall.castShadow = true;
-            backWall.receiveShadow = true;
-            scene.add(backWall);
-
-            // Left wall
-            const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.2, 5, depth), wallMaterial);
-            leftWall.position.set(x - width / 2, 2.5, z);
-            leftWall.castShadow = true;
-            leftWall.receiveShadow = true;
-            scene.add(leftWall);
-
-            // Right wall
-            const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.2, 5, depth), wallMaterial);
-            rightWall.position.set(x + width / 2, 2.5, z);
-            rightWall.castShadow = true;
-            rightWall.receiveShadow = true;
-            scene.add(rightWall);
+        // Dramatic spotlights
+        const spotlights = [];
+        for (let i = 0; i < 6; i++) {
+            const spotlight = new THREE.SpotLight(0xffffff, 1.5, 80, Math.PI / 6, 0.8, 2);
+            spotlight.position.set(
+                Math.cos((i / 6) * Math.PI * 2) * 30,
+                20,
+                Math.sin((i / 6) * Math.PI * 2) * 30
+            );
+            spotlight.castShadow = true;
+            spotlight.shadow.mapSize.width = 2048;
+            spotlight.shadow.mapSize.height = 2048;
+            scene.add(spotlight);
+            spotlights.push(spotlight);
         }
 
-        // Create gallery rooms
-        createRoom(0, 0, 20, 20, 'ABOUT_ROOM', 0x0d0221);
-        createRoom(30, 0, 20, 20, 'EXPERIENCE_ROOM', 0x1a0033);
-        createRoom(-30, 0, 20, 20, 'ESCALATE_ROOM', 0x2d0052);
-        createRoom(0, 30, 20, 20, 'WRITING_ROOM', 0x1a0a2e);
-        createRoom(0, -30, 20, 20, 'CONTACT_ROOM', 0x0d0a1a);
+        // ════════════════════════════════════════════════════════════
+        // GALLERY ARCHITECTURE
+        // ════════════════════════════════════════════════════════════
+
+        // Main floor
+        const floorGeometry = new THREE.PlaneGeometry(200, 200);
+        const floorMaterial = new THREE.MeshStandardMaterial({
+            color: 0x1a1a1a,
+            roughness: 0.8,
+            metalness: 0
+        });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        // Ceiling
+        const ceilingGeometry = new THREE.PlaneGeometry(200, 200);
+        const ceilingMaterial = new THREE.MeshStandardMaterial({
+            color: 0x0a0a0a,
+            roughness: 0.9
+        });
+        const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+        ceiling.position.y = 15;
+        ceiling.rotation.x = Math.PI / 2;
+        ceiling.receiveShadow = true;
+        scene.add(ceiling);
+
+        // Walls
+        const wallMaterial = new THREE.MeshStandardMaterial({
+            color: 0x0f0f0f,
+            roughness: 0.85,
+            metalness: 0.05
+        });
+
+        function createWall(x, z, width, depth) {
+            const geometry = new THREE.BoxGeometry(width, 15, depth);
+            const wall = new THREE.Mesh(geometry, wallMaterial);
+            wall.position.set(x, 7.5, z);
+            wall.castShadow = true;
+            wall.receiveShadow = true;
+            wall.userData = { type: 'wall' };
+            scene.add(wall);
+            return wall;
+        }
+
+        // Create gallery layout - perimeter walls
+        createWall(100, 0, 1, 200);   // Right
+        createWall(-100, 0, 1, 200);  // Left
+        createWall(0, 100, 200, 1);   // Back
+        createWall(0, -100, 200, 1);  // Front
+
+        // Interior dividing walls
+        createWall(0, 40, 150, 1);
+        createWall(0, -40, 150, 1);
+        createWall(50, 0, 1, 80);
+        createWall(-50, 0, 1, 80);
 
         // ════════════════════════════════════════════════════════════
-        // EXHIBITS (Floating Interactive Objects)
+        // INTERACTIVE ARTWORKS/EXHIBITS
         // ════════════════════════════════════════════════════════════
-        const exhibits = [
+        const artworks = [];
+
+        const artworkData = [
             {
-                position: [0, 2, 0],
-                title: 'ABOUT',
-                description: 'Brand Strategist & Marketing Professional\n\nMSc Management · University of Birmingham\nFounded Escalate Agency\nExpertise: Brand Strategy, Content Marketing, Paid Social',
-                geometry: new THREE.IcosahedronGeometry(1, 4),
-                color: 0x00ff88
+                position: [0, 2, -50],
+                title: 'ABOUT ME',
+                content: `Brand Strategist & Marketing Professional
+
+MSc Management, University of Birmingham
+Graduate Route Visa — Open to full-time roles
+Founded Escalate, a social media marketing agency
+
+I build brands people remember through data-driven strategy and creative storytelling. I understand how businesses work, not just how they look.`,
+                size: 2
             },
             {
-                position: [30, 2, 0],
+                position: [50, 2, -20],
                 title: 'EXPERIENCE',
-                description: 'Brand Ambassador @ Canva 2026-Present\nMarketing & Content Intern @ Silver Fern 2025\nSocial Media Intern @ YouVah 2024\nOperations Intern @ Assam Wood 2024',
-                geometry: new THREE.TorusGeometry(1.2, 0.5, 16, 100),
-                color: 0x00ffff
+                content: `2026 - Present: Brand Ambassador at Canva
+→ Campus activations, product testing, feedback
+
+Jun-Sep 2025: Marketing & Content Intern
+Silver Fern Education
+→ 10+ SEO blogs, 30+ social posts
+
+Apr-Jun 2024: Social Media Marketing Intern
+YouVah
+→ Platform strategy, campaign analytics
+
+Jul-Dec 2024: Operations & Finance Intern
+Assam Wood & Allied
+→ 20% efficiency improvement, sustainability`,
+                size: 2
             },
             {
-                position: [-30, 2, 0],
-                title: 'ESCALATE',
-                description: 'Social Media Marketing Agency\nFounded 2023 · Sunset 2024\n\nServices: Content Strategy, Paid Ads, Influencer Marketing, Brand Positioning, Analytics',
-                geometry: new THREE.OctahedronGeometry(1.2),
-                color: 0xff00ff
+                position: [-50, 2, -20],
+                title: 'ESCALATE AGENCY',
+                content: `Social Media Marketing Agency
+Founded 2023 — Sunset 2024
+
+A boutique agency helping SMEs build authentic brands.
+
+Services:
+• Content Strategy & Planning
+• Paid Social Advertising
+• Influencer Collaborations
+• Brand Identity & Positioning
+• Campaign Analytics & Reporting
+• Client Management
+
+Real-world experience that no classroom could replicate.`,
+                size: 2
             },
             {
-                position: [0, 2, 30],
-                title: 'WRITING',
-                description: '01. Why Small Businesses Need Brand Voice\n02. The Instagram Algorithm 2025\n03. What Luxury Brands Get Right\n04. Founding at 21\n05. Gen Z and Traditional Advertising',
-                geometry: new THREE.TetrahedronGeometry(1.2),
-                color: 0xffaa00
+                position: [50, 2, 20],
+                title: 'SKILLS & EXPERTISE',
+                content: `Brand Positioning
+Campaign Strategy
+SEO & Copywriting
+Paid Social Advertising
+Consumer Psychology
+Market Research
+Influencer Marketing
+Financial Analysis
+Excel & Python
+Luxury Brand Management
+
+Specializations:
+→ Luxury & Premium Brands
+→ Gen Z Marketing
+→ Consumer Insight
+→ Data-Driven Strategy`,
+                size: 2
             },
             {
-                position: [0, 2, -30],
-                title: 'CONTACT',
-                description: 'Email: ruhanibajaj1@gmail.com\nPhone: (+44) 07352 685719\nLinkedIn: ruhani-bajajrb\n\nOpen to opportunities & collaborations',
-                geometry: new THREE.DodecahedronGeometry(1),
-                color: 0x00ff00
+                position: [-50, 2, 20],
+                title: 'WRITING & INSIGHTS',
+                content: `Blog Posts Coming Soon:
+
+01. Why Small Businesses Need Brand Voice
+    Not just a logo, but an authentic voice
+
+02. The Instagram Algorithm in 2025
+    What actually works right now
+
+03. Luxury Brands Get This Right
+    Understanding premium positioning
+
+04. Founding at 21
+    What I learned when it shut down
+
+05. Gen Z & Traditional Advertising
+    Why it's not working anymore`,
+                size: 2
+            },
+            {
+                position: [0, 2, 50],
+                title: 'GET IN TOUCH',
+                content: `Let's collaborate on something amazing.
+
+Email: ruhanibajaj1@gmail.com
+Phone: (+44) 07352 685719
+LinkedIn: ruhani-bajajrb
+
+Currently seeking:
+→ Brand Strategy roles
+→ Marketing positions
+→ Luxury brand opportunities
+→ Consultancy roles
+
+Open to full-time positions & projects.`,
+                size: 2
             }
         ];
 
-        exhibits.forEach((exhibit, i) => {
-            const material = new THREE.MeshStandardMaterial({
-                color: exhibit.color,
-                emissive: exhibit.color,
-                emissiveIntensity: 0.5,
-                metalness: 0.8,
-                roughness: 0.2,
-                wireframe: false
+        artworkData.forEach((data, i) => {
+            // Create glowing frame
+            const frameGeometry = new THREE.BoxGeometry(data.size * 3, data.size * 3, 0.1);
+            const frameMaterial = new THREE.MeshStandardMaterial({
+                color: 0x1a1a1a,
+                emissive: 0x333333,
+                metalness: 0.6,
+                roughness: 0.2
             });
-
-            const mesh = new THREE.Mesh(exhibit.geometry, material);
-            mesh.position.set(...exhibit.position);
-            mesh.castShadow = true;
-            mesh.receiveShadow = true;
-            mesh.userData = {
-                type: 'exhibit',
+            const frame = new THREE.Mesh(frameGeometry, frameMaterial);
+            frame.position.set(...data.position);
+            frame.castShadow = true;
+            frame.receiveShadow = true;
+            frame.userData = {
+                type: 'artwork',
                 interactive: true,
-                title: exhibit.title,
-                description: exhibit.description
+                index: i,
+                title: data.title,
+                content: data.content
             };
+            scene.add(frame);
+            artworks.push({ mesh: frame, data: data });
 
-            mesh.rotationSpeed = (Math.random() - 0.5) * 0.01;
-            scene.add(mesh);
-            gallery.exhibits.push(mesh);
+            // Create glowing border
+            const borderGeometry = new THREE.EdgesGeometry(frameGeometry);
+            const borderMaterial = new THREE.LineBasicMaterial({
+                color: 0xffffff,
+                linewidth: 2
+            });
+            const border = new THREE.LineSegments(borderGeometry, borderMaterial);
+            border.position.set(...data.position);
+            border.position.z -= 0.1;
+            scene.add(border);
         });
 
         // ════════════════════════════════════════════════════════════
         // PLAYER MOVEMENT
         // ════════════════════════════════════════════════════════════
         const keys = {};
-        const player = { x: 0, z: 5, speed: 0.2, sensitivity: 0.004 };
+        const player = {
+            velocity: new THREE.Vector3(),
+            direction: new THREE.Vector3(),
+            speed: 0.15,
+            acceleration: 0.02,
+            friction: 0.85
+        };
+
         let yaw = 0, pitch = 0;
+        let isLocked = false;
 
         document.addEventListener('keydown', (e) => {
             keys[e.key.toLowerCase()] = true;
@@ -495,34 +559,49 @@
         });
 
         document.addEventListener('mousemove', (e) => {
-            const deltaX = e.movementX || 0;
-            const deltaY = e.movementY || 0;
-
-            yaw -= deltaX * player.sensitivity;
-            pitch -= deltaY * player.sensitivity;
-            pitch = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, pitch));
+            if (isLocked) {
+                yaw -= e.movementX * 0.003;
+                pitch -= e.movementY * 0.003;
+                pitch = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, pitch));
+            }
         });
 
         document.addEventListener('click', () => {
-            canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
-            canvas.requestPointerLock();
+            renderer.domElement.requestPointerLock = renderer.domElement.requestPointerLock || renderer.domElement.mozRequestPointerLock;
+            if (renderer.domElement.requestPointerLock) {
+                renderer.domElement.requestPointerLock();
+                isLocked = true;
+            }
+        });
+
+        document.addEventListener('pointerlockchange', () => {
+            isLocked = document.pointerLockElement === renderer.domElement;
         });
 
         function updatePlayer() {
             let moveX = 0, moveZ = 0;
 
-            if (keys['w']) moveZ -= player.speed;
-            if (keys['s']) moveZ += player.speed;
-            if (keys['a']) moveX -= player.speed;
-            if (keys['d']) moveX += player.speed;
+            if (keys['w']) moveZ -= player.acceleration;
+            if (keys['s']) moveZ += player.acceleration;
+            if (keys['a']) moveX -= player.acceleration;
+            if (keys['d']) moveX += player.acceleration;
 
             const cos = Math.cos(yaw);
             const sin = Math.sin(yaw);
 
-            player.x += moveX * cos - moveZ * sin;
-            player.z += moveX * sin + moveZ * cos;
+            player.velocity.x += moveX * cos - moveZ * sin;
+            player.velocity.z += moveX * sin + moveZ * cos;
 
-            camera.position.set(player.x, 1.6, player.z);
+            player.velocity.x *= player.friction;
+            player.velocity.z *= player.friction;
+
+            camera.position.x += player.velocity.x;
+            camera.position.z += player.velocity.z;
+
+            // Collision with walls
+            if (Math.abs(camera.position.x) > 95) camera.position.x = 95 * Math.sign(camera.position.x);
+            if (Math.abs(camera.position.z) > 95) camera.position.z = 95 * Math.sign(camera.position.z);
+
             camera.rotation.order = 'YXZ';
             camera.rotation.y = yaw;
             camera.rotation.x = pitch;
@@ -530,75 +609,67 @@
 
         // ════════════════════════════════════════════════════════════
         // INTERACTION SYSTEM
-        // ══════════���═════════════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════
         const raycaster = new THREE.Raycaster();
-        let hoveredExhibit = null;
+        let nearestArtwork = null;
 
         function checkInteractions() {
             const forward = new THREE.Vector3(0, 0, -1);
             forward.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
             raycaster.set(camera.position, forward);
 
-            const intersects = raycaster.intersectObjects(gallery.exhibits);
+            const intersects = raycaster.intersectObjects(artworks.map(a => a.mesh));
 
-            if (intersects.length > 0 && intersects[0].distance < 5) {
-                hoveredExhibit = intersects[0].object;
-                document.getElementById('prompt').classList.remove('hidden');
+            if (intersects.length > 0 && intersects[0].distance < 20) {
+                nearestArtwork = intersects[0].object;
             } else {
-                hoveredExhibit = null;
-                document.getElementById('prompt').classList.add('hidden');
+                nearestArtwork = null;
             }
         }
 
         document.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 'e' && hoveredExhibit) {
-                openModal(hoveredExhibit.userData);
+            if ((e.key === 'Enter' || e.key === ' ') && nearestArtwork) {
+                openArtwork(nearestArtwork.userData);
             }
         });
 
-        function openModal(data) {
-            const modal = document.getElementById('modal');
-            const content = document.getElementById('modal-content');
-            content.innerHTML = `<h2>${data.title}</h2><p>${data.description.replace(/\n/g, '<br>')}</p>`;
-            modal.classList.add('active');
+        function openArtwork(data) {
+            const panel = document.getElementById('artwork-panel');
+            const content = document.getElementById('panel-content');
+            content.innerHTML = `
+                <h3>${data.title}</h3>
+                <p>${data.content.split('\n').join('<br>')}</p>
+            `;
+            panel.classList.add('active');
         }
 
-        function closeModal() {
-            document.getElementById('modal').classList.remove('active');
+        function closePanel() {
+            document.getElementById('artwork-panel').classList.remove('active');
         }
 
-        // ════════════════════════════════════════════════════════════
-        // CURSOR SYSTEM
-        // ════════════════════════════════════════════════════════════
-        const customCursor = document.getElementById('custom-cursor');
-        document.addEventListener('mousemove', (e) => {
-            customCursor.style.left = e.clientX + 'px';
-            customCursor.style.top = e.clientY + 'px';
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closePanel();
         });
 
         // ════════════════════════════════════════════════════════════
-        // LOADING
+        // CURSOR
+        // ════════════════════════════════════════════════════════════
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // ════════════════════════════════════════════════════════════
+        // LOADING SCREEN
         // ════════════════════════════════════════════════════════════
         window.addEventListener('load', () => {
-            const loading = document.getElementById('loading');
-            const loadingBar = document.getElementById('loading-bar');
-            let progress = 0;
-
-            const interval = setInterval(() => {
-                progress += Math.random() * 30;
-                if (progress >= 100) {
-                    progress = 100;
-                    clearInterval(interval);
-                    loadingBar.style.width = '100%';
-                    setTimeout(() => {
-                        loading.classList.add('hidden');
-                    }, 500);
-                }
-                loadingBar.style.width = progress + '%';
-            }, 200);
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 1500);
         });
 
-        // ════════════════���═══════════════════════════════════════════
+        // ════════════════════════════════════════════════════════════
         // ANIMATION LOOP
         // ════════════════════════════════════════════════════════════
         function animate() {
@@ -607,27 +678,25 @@
             updatePlayer();
             checkInteractions();
 
-            // Rotate exhibits
-            gallery.exhibits.forEach((exhibit, i) => {
-                exhibit.rotation.x += 0.003;
-                exhibit.rotation.y += exhibit.rotationSpeed;
-                exhibit.position.y = 2 + Math.sin(Date.now() * 0.001 + i) * 0.5;
+            // Animate artworks
+            artworks.forEach((artwork, i) => {
+                artwork.mesh.position.y = 2 + Math.sin(Date.now() * 0.0008 + i) * 0.3;
+                artwork.mesh.rotation.y += 0.0003;
+
+                // Glow effect
+                if (artwork.mesh === nearestArtwork) {
+                    artwork.mesh.material.emissive.setHex(0x444444);
+                } else {
+                    artwork.mesh.material.emissive.setHex(0x1a1a1a);
+                }
             });
-
-            // Update minimap
-            const minimapPlayer = document.querySelector('.minimap-player');
-            minimapPlayer.style.left = (50 + (player.x / 100) * 50) + '%';
-            minimapPlayer.style.top = (50 + (player.z / 100) * 50) + '%';
-
-            // Update HUD
-            document.getElementById('location').textContent = hoveredExhibit?.userData.title || 'GALLERY_01';
 
             renderer.render(scene, camera);
         }
 
         animate();
 
-        // Handle window resize
+        // Handle resize
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
