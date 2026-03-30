@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ruhani Bajaj - Strategic Marketing</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -23,29 +21,6 @@
         }
 
         /* ════════════════════════════════════════════════════════════ */
-        /* 3D CANVAS BACKGROUND */
-        /* ════════════════════════��═══════════════════════════════════ */
-        #canvas-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* ════════════════════════════════════════════════════════════ */
-        /* GLASS MORPHISM EFFECT */
-        /* ════════════════════════════════════════════════════════════ */
-        .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-        }
-
-        /* ════════════════════════════════════════════════════════════ */
         /* CURSOR */
         /* ════════════════════════════════════════════════════════════ */
         .cursor-dot {
@@ -58,27 +33,14 @@
             z-index: 9999;
             mix-blend-mode: screen;
             box-shadow: 0 0 20px #00d4ff;
-            transition: all 0.1s ease-out;
         }
 
         .cursor-dot.active {
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             background: transparent;
             border: 2px solid #ff00ff;
-            box-shadow: 0 0 40px #ff00ff;
-            animation: magneticPulse 0.5s ease-out;
-        }
-
-        @keyframes magneticPulse {
-            0% {
-                transform: scale(0.8);
-                opacity: 1;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
+            box-shadow: 0 0 30px #ff00ff;
         }
 
         /* ════════════════════════════════════════════════════════════ */
@@ -118,43 +80,16 @@
             50% { opacity: 1; }
         }
 
-        .loader-cube {
-            width: 60px;
-            height: 60px;
-            perspective: 1000px;
+        .loader-line {
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(90deg, #00d4ff, #ff00ff, #00d4ff);
+            animation: slide 2s infinite;
         }
 
-        .cube {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            animation: rotate3d 3s infinite linear;
-        }
-
-        .cube div {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #00d4ff, #ff00ff);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            opacity: 0.8;
-        }
-
-        .front  { transform: translateZ(30px); }
-        .back   { transform: rotateY(180deg) translateZ(30px); }
-        .right  { transform: rotateY(90deg) translateZ(30px); }
-        .left   { transform: rotateY(-90deg) translateZ(30px); }
-        .top    { transform: rotateX(90deg) translateZ(30px); }
-        .bottom { transform: rotateX(-90deg) translateZ(30px); }
-
-        @keyframes rotate3d {
-            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-            100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+        @keyframes slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
 
         /* ════════════════════════════════════════════════════════════ */
@@ -170,8 +105,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(15, 15, 15, 0.7);
-            backdrop-filter: blur(20px);
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(0, 212, 255, 0.1);
         }
 
@@ -183,12 +118,6 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             letter-spacing: 1px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .nav-brand:hover {
-            transform: scale(1.05);
         }
 
         .nav-menu {
@@ -225,19 +154,19 @@
 
         .nav-cta {
             padding: 0.7rem 1.5rem;
-            background: linear-gradient(135deg, #00d4ff, #ff00ff);
+            background: #00d4ff;
             color: #0f0f0f;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
         }
 
         .nav-cta:hover {
+            background: #ff00ff;
             transform: translateY(-3px);
-            box-shadow: 0 10px 40px rgba(0, 212, 255, 0.4);
+            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.3);
         }
 
         /* ════════════════════════════════════════════════════════════ */
@@ -251,6 +180,7 @@
             padding: 8rem 4rem 4rem;
             text-align: center;
             position: relative;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(255, 0, 255, 0.05) 100%);
         }
 
         .hero-content {
@@ -333,27 +263,10 @@
             cursor: pointer;
             transition: all 0.3s;
             font-family: 'Poppins', sans-serif;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            transition: left 0.3s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #00d4ff, #ff00ff);
+            background: #00d4ff;
             color: #0f0f0f;
         }
 
@@ -371,7 +284,6 @@
         .btn-secondary:hover {
             background: rgba(255, 0, 255, 0.1);
             transform: translateY(-5px);
-            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
         }
 
         .scroll-arrow {
@@ -380,6 +292,7 @@
             left: 50%;
             transform: translateX(-50%);
             animation: bounce 2s infinite;
+            cursor: pointer;
         }
 
         @keyframes bounce {
@@ -391,8 +304,7 @@
         /* MARQUEE */
         /* ════════════════════════════════════════════════════════════ */
         .marquee-section {
-            background: rgba(26, 26, 26, 0.5);
-            backdrop-filter: blur(10px);
+            background: #1a1a1a;
             padding: 2rem 0;
             border-top: 1px solid rgba(0, 212, 255, 0.1);
             border-bottom: 1px solid rgba(255, 0, 255, 0.1);
@@ -428,11 +340,10 @@
             flex-direction: column;
             justify-content: center;
             border-top: 1px solid rgba(0, 212, 255, 0.1);
-            position: relative;
         }
 
         section:nth-child(even) {
-            background: rgba(26, 26, 26, 0.3);
+            background: #1a1a1a;
         }
 
         .section-header {
@@ -458,7 +369,7 @@
             max-width: 600px;
         }
 
-        /* ════════════════════════════════════════════════════════════ */
+        /* ════════════════���═══════════════════════════════════════════ */
         /* GRID SECTION */
         /* ════════════════════════════════════════════════════════════ */
         .grid-layout {
@@ -470,23 +381,11 @@
 
         .grid-item {
             padding: 2rem;
-            background: rgba(0, 212, 255, 0.03);
+            background: rgba(0, 212, 255, 0.02);
             border: 1px solid rgba(0, 212, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 8px;
             transition: all 0.3s;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .grid-item::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 50% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: -1;
         }
 
         .grid-item:hover {
@@ -494,10 +393,6 @@
             background: rgba(0, 212, 255, 0.08);
             transform: translateY(-10px);
             box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
-        }
-
-        .grid-item:hover::before {
-            opacity: 1;
         }
 
         .grid-item h3 {
@@ -525,40 +420,6 @@
         }
 
         /* ════════════════════════════════════════════════════════════ */
-        /* CANVAS GRID */
-        /* ════════════════════════════════════════════════════════════ */
-        .s-about {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .s_inner {
-            position: relative;
-            z-index: 2;
-        }
-
-        .s_grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            opacity: 0.3;
-        }
-
-        .s__canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* ════════════════════════════════════════════════════════════ */
         /* TIMELINE */
         /* ════════════════════════════════════════════════════════════ */
         .timeline {
@@ -573,16 +434,6 @@
             margin-bottom: 3rem;
             padding-bottom: 2rem;
             border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-            padding: 2rem;
-            background: rgba(0, 212, 255, 0.03);
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-
-        .timeline-item:hover {
-            background: rgba(0, 212, 255, 0.08);
-            border-color: #00d4ff;
-            transform: translateX(10px);
         }
 
         .timeline-item:last-child {
@@ -617,8 +468,7 @@
         /* FOOTER */
         /* ════════════════════════════════════════════════════════════ */
         footer {
-            background: rgba(15, 15, 15, 0.8);
-            backdrop-filter: blur(20px);
+            background: #0f0f0f;
             padding: 4rem;
             text-align: center;
             border-top: 1px solid rgba(0, 212, 255, 0.1);
@@ -663,13 +513,11 @@
             text-decoration: none;
             border-radius: 4px;
             transition: all 0.3s;
-            cursor: pointer;
         }
 
         .footer-link:hover {
             background: #00d4ff;
             color: #0f0f0f;
-            transform: translateY(-3px);
         }
 
         /* ════════════════════════════════════════════════════════════ */
@@ -704,22 +552,10 @@
     </style>
 </head>
 <body>
-    <!-- 3D Canvas Background -->
-    <canvas id="canvas-bg"></canvas>
-
     <!-- Preloader -->
     <div class="preloader" id="preloader">
         <div class="loader-text">Loading Experience</div>
-        <div class="loader-cube">
-            <div class="cube">
-                <div class="front">RB</div>
-                <div class="back">RB</div>
-                <div class="right">RB</div>
-                <div class="left">RB</div>
-                <div class="top">RB</div>
-                <div class="bottom">RB</div>
-            </div>
-        </div>
+        <div class="loader-line"></div>
     </div>
 
     <!-- Cursor -->
@@ -727,14 +563,14 @@
 
     <!-- Navigation -->
     <nav>
-        <div class="nav-brand" onclick="scrollToTop()">RB</div>
+        <div class="nav-brand">RB</div>
         <div class="nav-menu">
             <a href="#about" class="nav-item">About</a>
             <a href="#experience" class="nav-item">Experience</a>
             <a href="#work" class="nav-item">Work</a>
             <a href="#contact" class="nav-item">Contact</a>
         </div>
-        <button class="nav-cta" onclick="hireMe()">Hire Me</button>
+        <button class="nav-cta">Hire Me</button>
     </nav>
 
     <!-- Hero -->
@@ -749,8 +585,8 @@
                 I'm Ruhani Bajaj, a brand strategist helping businesses build brands that people remember. Let's create something incredible together.
             </p>
             <div class="hero-cta">
-                <button class="btn btn-primary" onclick="viewWork()">View My Work</button>
-                <button class="btn btn-secondary" onclick="getInTouch()">Get in Touch</button>
+                <button class="btn btn-primary">View My Work</button>
+                <button class="btn btn-secondary">Get in Touch</button>
             </div>
         </div>
         <div class="scroll-arrow">↓</div>
@@ -776,56 +612,44 @@
     </div>
 
     <!-- About Section -->
-    <section id="about" class="s-about glass">
-        <svg class="s_grid" viewBox="0 0 100 100" preserveAspectRatio="none">
-            <defs>
-                <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
-                    <path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(0, 212, 255, 0.1)" stroke-width="0.5"/>
-                </pattern>
-            </defs>
-            <rect width="100" height="100" fill="url(#grid)" />
-        </svg>
-        <canvas class="s__canvas"></canvas>
-        
-        <div class="s_inner">
-            <div class="section-header">
-                <h2 class="section-title">About <span class="gradient">Me</span></h2>
-                <p class="section-subtitle">
-                    Passionate brand strategist with experience across digital marketing, content creation, and business development. I blend data-driven insights with creative thinking.
-                </p>
-            </div>
+    <section id="about">
+        <div class="section-header">
+            <h2 class="section-title">About <span class="gradient">Me</span></h2>
+            <p class="section-subtitle">
+                Passionate brand strategist with experience across digital marketing, content creation, and business development. I blend data-driven insights with creative thinking.
+            </p>
+        </div>
 
-            <div class="grid-layout">
-                <div class="grid-item">
-                    <h3>🎯 Brand Strategy</h3>
-                    <p>Positioning, messaging, and market differentiation through research-backed insights.</p>
-                    <span class="grid-item-tag">Strategic</span>
-                </div>
-                <div class="grid-item">
-                    <h3>📱 Digital Marketing</h3>
-                    <p>SEO, paid social, and content campaigns that drive measurable results.</p>
-                    <span class="grid-item-tag">Marketing</span>
-                </div>
-                <div class="grid-item">
-                    <h3>📊 Analytics</h3>
-                    <p>Data-driven decision making with Excel, Python, and insights tools.</p>
-                    <span class="grid-item-tag">Analysis</span>
-                </div>
-                <div class="grid-item">
-                    <h3>✍️ Content Creation</h3>
-                    <p>SEO-optimized writing and creative storytelling that resonates with audiences.</p>
-                    <span class="grid-item-tag">Content</span>
-                </div>
-                <div class="grid-item">
-                    <h3>🤝 Client Relations</h3>
-                    <p>Building lasting partnerships through transparency and exceptional results.</p>
-                    <span class="grid-item-tag">Relations</span>
-                </div>
-                <div class="grid-item">
-                    <h3>🚀 Growth Hacking</h3>
-                    <p>Scaling businesses through strategic campaigns and market expansion.</p>
-                    <span class="grid-item-tag">Growth</span>
-                </div>
+        <div class="grid-layout">
+            <div class="grid-item">
+                <h3>🎯 Brand Strategy</h3>
+                <p>Positioning, messaging, and market differentiation through research-backed insights.</p>
+                <span class="grid-item-tag">Strategic</span>
+            </div>
+            <div class="grid-item">
+                <h3>📱 Digital Marketing</h3>
+                <p>SEO, paid social, and content campaigns that drive measurable results.</p>
+                <span class="grid-item-tag">Marketing</span>
+            </div>
+            <div class="grid-item">
+                <h3>📊 Analytics</h3>
+                <p>Data-driven decision making with Excel, Python, and insights tools.</p>
+                <span class="grid-item-tag">Analysis</span>
+            </div>
+            <div class="grid-item">
+                <h3>✍️ Content Creation</h3>
+                <p>SEO-optimized writing and creative storytelling that resonates with audiences.</p>
+                <span class="grid-item-tag">Content</span>
+            </div>
+            <div class="grid-item">
+                <h3>🤝 Client Relations</h3>
+                <p>Building lasting partnerships through transparency and exceptional results.</p>
+                <span class="grid-item-tag">Relations</span>
+            </div>
+            <div class="grid-item">
+                <h3>🚀 Growth Hacking</h3>
+                <p>Scaling businesses through strategic campaigns and market expansion.</p>
+                <span class="grid-item-tag">Growth</span>
             </div>
         </div>
     </section>
@@ -923,9 +747,9 @@
                     Always interested in hearing about new projects, collaborations, and opportunities. Let's work together to create something amazing.
                 </p>
                 <div class="footer-links">
-                    <a href="mailto:ruhanibajaj1@gmail.com" class="footer-link" onclick="playSound('pop')">📧 Email</a>
-                    <a href="https://linkedin.com/in/ruhani-bajajrb" target="_blank" class="footer-link" onclick="playSound('pop')">💼 LinkedIn</a>
-                    <a href="tel:+4407352685719" class="footer-link" onclick="playSound('pop')">📱 Phone</a>
+                    <a href="mailto:ruhanibajaj1@gmail.com" class="footer-link">📧 Email</a>
+                    <a href="https://linkedin.com/in/ruhani-bajajrb" target="_blank" class="footer-link">💼 LinkedIn</a>
+                    <a href="tel:+4407352685719" class="footer-link">📱 Phone</a>
                 </div>
             </div>
         </footer>
@@ -937,7 +761,7 @@
         // ════════════════════════════════════════════════════════════
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        function playSound(type) {
+        function playScrollSound() {
             const now = audioContext.currentTime;
             const osc = audioContext.createOscillator();
             const gain = audioContext.createGain();
@@ -945,202 +769,97 @@
             osc.connect(gain);
             gain.connect(audioContext.destination);
 
-            if (type === 'pop') {
-                osc.frequency.setValueAtTime(800, now);
-                osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-                osc.start(now);
-                osc.stop(now + 0.1);
-            } else if (type === 'click') {
-                osc.frequency.setValueAtTime(400, now);
-                osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
-                gain.gain.setValueAtTime(0.1, now);
-                gain.gain.exponentialRampToValueAtTime(0, now + 0.05);
-                osc.start(now);
-                osc.stop(now + 0.05);
-            }
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(200, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+            
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            
+            osc.start(now);
+            osc.stop(now + 0.2);
         }
 
-        // ════════════════════════════════════════════════════════════
-        // 3D BACKGROUND ANIMATION
-        // ════════════════════════════════════════════════════════════
-        const canvas = document.getElementById('canvas-bg');
-        const ctx = canvas.getContext('2d');
+        function playSelectionSound() {
+            const now = audioContext.currentTime;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
 
-        const particles = [];
-        for (let i = 0; i < 50; i++) {
-            particles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                z: Math.random() * 100,
-                vx: (Math.random() - 0.5) * 2,
-                vy: (Math.random() - 0.5) * 2,
-                vz: (Math.random() - 0.5) * 2
-            });
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+            
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            
+            osc.start(now);
+            osc.stop(now + 0.1);
         }
-
-        function drawParticles() {
-            ctx.fillStyle = 'rgba(15, 15, 15, 0.1)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            particles.forEach(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.z += p.vz;
-
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                if (p.z < 0 || p.z > 100) p.vz *= -1;
-
-                const scale = p.z / 100;
-                const size = 2 * scale;
-                const opacity = scale * 0.5;
-
-                ctx.fillStyle = `rgba(0, 212, 255, ${opacity})`;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
-                ctx.fill();
-            });
-
-            requestAnimationFrame(drawParticles);
-        }
-
-        drawParticles();
-
-        // ════════════════════════════════════════════════════════════
-        // MAGNETIC CURSOR
-        // ════════════════════════════════════════════════════════════
-        const cursor = document.querySelector('.cursor-dot');
-        const interactive = document.querySelectorAll('a, button, .grid-item, .timeline-item');
-        let mouseX = 0, mouseY = 0;
-        let isNearButton = false;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-
-            cursor.style.left = mouseX + 'px';
-            cursor.style.top = mouseY + 'px';
-
-            // Magnetic effect
-            interactive.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                const elX = rect.left + rect.width / 2;
-                const elY = rect.top + rect.height / 2;
-                const distance = Math.hypot(mouseX - elX, mouseY - elY);
-
-                if (distance < 100) {
-                    isNearButton = true;
-                    cursor.classList.add('active');
-                    
-                    // Pull cursor towards button
-                    const pull = (100 - distance) / 100;
-                    const angle = Math.atan2(elY - mouseY, elX - mouseX);
-                    cursor.style.left = (mouseX + Math.cos(angle) * pull * 30) + 'px';
-                    cursor.style.top = (mouseY + Math.sin(angle) * pull * 30) + 'px';
-                } else {
-                    isNearButton = false;
-                    cursor.classList.remove('active');
-                }
-            });
-        });
 
         // ════════════════════════════════════════════════════════════
         // PRELOADER
-        // ═══��════════════════════════════════════════════════════════
+        // ════════════════════════════════════════════��═══════════════
         window.addEventListener('load', () => {
             setTimeout(() => {
                 document.getElementById('preloader').classList.add('hidden');
-                playSound('pop');
-            }, 2000);
+                playSelectionSound();
+            }, 1500);
         });
 
         // ════════════════════════════════════════════════════════════
-        // BUTTON FUNCTIONS
+        // CURSOR
         // ════════════════════════════════════════════════════════════
-        function viewWork() {
-            playSound('click');
-            document.getElementById('work').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function getInTouch() {
-            playSound('click');
-            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function hireMe() {
-            playSound('click');
-            window.location.href = 'mailto:ruhanibajaj1@gmail.com?subject=Hiring Inquiry';
-        }
-
-        function scrollToTop() {
-            playSound('click');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        // ════════════════════════════════════════════════════════════
-        // CANVAS GRID ANIMATION
-        // ════════════════════════════════════════════════���═══════════
-        const canvases = document.querySelectorAll('.s__canvas');
-        canvases.forEach(canvas => {
-            const ctx = canvas.getContext('2d');
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-
-            function drawGrid() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.strokeStyle = 'rgba(0, 212, 255, 0.1)';
-                ctx.lineWidth = 1;
-
-                for (let i = 0; i < canvas.width; i += 50) {
-                    ctx.beginPath();
-                    ctx.moveTo(i, 0);
-                    ctx.lineTo(i, canvas.height);
-                    ctx.stroke();
-                }
-
-                for (let i = 0; i < canvas.height; i += 50) {
-                    ctx.beginPath();
-                    ctx.moveTo(0, i);
-                    ctx.lineTo(canvas.width, i);
-                    ctx.stroke();
-                }
-            }
-
-            drawGrid();
+        const cursor = document.querySelector('.cursor-dot');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
         });
 
         // ════════════════════════════════════════════════════════════
-        // SMOOTH SCROLL ANCHORS
+        // CURSOR ACTIVE ON HOVER
+        // ════════════════════════════════════════════════════════════
+        document.querySelectorAll('a, button, .grid-item').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('active');
+                playSelectionSound();
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('active');
+            });
+        });
+
+        // ════════════════════════════════════════════════════════════
+        // SMOOTH SCROLL WITH SOUND
         // ════════════════════════════════════════════════════════════
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
+                playScrollSound();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    playSound('click');
                     target.scrollIntoView({ behavior: 'smooth' });
                 }
             });
         });
 
         // ════════════════════════════════════════════════════════════
-        // BUTTON HOVER SOUNDS
+        // SCROLL ARROW CLICK
         // ════════════════════════════════════════════════════════════
-        document.querySelectorAll('button').forEach(btn => {
-            btn.addEventListener('mouseenter', () => playSound('pop'));
+        document.querySelector('.scroll-arrow').addEventListener('click', () => {
+            playScrollSound();
+            document.querySelector('.marquee-section').scrollIntoView({ behavior: 'smooth' });
         });
 
         // ════════════════════════════════════════════════════════════
-        // WINDOW RESIZE
+        // BUTTON CLICK SOUNDS
         // ════════════════════════════════════════════════════════════
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                playSelectionSound();
+            });
         });
     </script>
 </body>
