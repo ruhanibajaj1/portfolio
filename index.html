@@ -3,447 +3,733 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruhani Bajaj - 3D Gallery</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>Ruhani Bajaj - Marketing Strategist</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { width: 100%; height: 100vh; background: #000; overflow: hidden; }
-        canvas { display: block; }
-        
-        .hud {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --text: #ffffff;
+            --text-muted: #a0a0a0;
+            --accent: #00ff88;
+            --accent-2: #0099ff;
+            --accent-3: #ff0088;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* ════════════════��══════════════════════════════════════════ */
+        /* CUSTOM CURSOR */
+        /* ═══════════════════════════════════════════════════════════ */
+        #cursor {
             position: fixed;
-            color: #fff;
-            font-family: monospace;
-            z-index: 100;
-        }
-        
-        .hud-top { 
-            top: 20px; 
-            left: 20px; 
-            font-size: 14px;
-            background: linear-gradient(135deg, #00ffff, #ff00ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: bold;
-        }
-        
-        .hud-bottom { 
-            bottom: 20px; 
-            left: 20px; 
-            font-size: 12px; 
-            color: #00ff88;
-            text-shadow: 0 0 10px #00ff88;
-        }
-        
-        .hud-hint { 
-            bottom: 80px; 
-            left: 20px; 
-            font-size: 12px; 
-            opacity: 0; 
-            transition: 0.3s;
-            color: #ffff00;
-            text-shadow: 0 0 10px #ffff00;
-        }
-        
-        .hud-hint.show { opacity: 1; }
-        
-        .panel {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0,0,0,0.95);
-            border: 2px solid #00ffff;
-            padding: 20px;
-            max-width: 350px;
-            color: #fff;
-            font-family: monospace;
-            font-size: 11px;
-            max-height: 60vh;
-            overflow-y: auto;
-            display: none;
-            z-index: 200;
-            line-height: 1.6;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-        }
-        
-        .panel.show { display: block; }
-        .panel h2 { 
-            margin-bottom: 10px; 
-            font-size: 14px; 
-            background: linear-gradient(90deg, #00ffff, #ff00ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            border-bottom: 1px solid #00ffff;
-            padding-bottom: 5px;
-            font-weight: bold;
-        }
-        .panel button { 
-            position: absolute; 
-            top: 5px; 
-            right: 5px; 
-            background: #00ffff;
-            border: none; 
-            cursor: pointer; 
-            width: 20px; 
+            width: 20px;
             height: 20px;
-            color: #000;
-            font-weight: bold;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
         }
-        .panel button:hover {
-            background: #ff00ff;
+
+        body.cursor-hover #cursor {
+            width: 30px;
+            height: 30px;
+            border-color: var(--accent-2);
+            box-shadow: 0 0 20px var(--accent-2);
+        }
+
+        /* ═══════════════════════════════════════════════════════════ */
+        /* ANIMATED BACKGROUND */
+        /* ═══════════════════════════════════════════════════════════ */
+        .bg-animation {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.1;
+        }
+
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: var(--accent);
+            top: -100px;
+            left: -100px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: var(--accent-2);
+            bottom: -50px;
+            right: -50px;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        .blob-3 {
+            width: 350px;
+            height: 350px;
+            background: var(--accent-3);
+            top: 50%;
+            right: 5%;
+            animation: float 22s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 30px); }
+        }
+
+        /* ═══════════════════════════════════════════════════════════ */
+        /* NAVIGATION */
+        /* ═══════════════════════════════════════════════════════════ */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 2rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .nav-links a {
+            font-size: 0.95rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .cta-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        /* ═══════════════════════════════════════════════════════════ */
+        /* HERO */
+        /* ═══════════════════════════════════════════════════════════ */
+        #hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.8s ease 0.4s backwards;
+        }
+
+        .hero-title span {
+            background: linear-gradient(135deg, var(--accent), var(--accent-2), var(--accent-3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-desc {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease 0.6s backwards;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            animation: fadeInUp 0.8s ease 0.8s backwards;
+        }
+
+        .btn-primary {
+            padding: 1rem 2.5rem;
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn-secondary {
+            padding: 1rem 2.5rem;
+            background: transparent;
+            border: 2px solid var(--accent-2);
+            color: var(--accent-2);
+            border-radius: 4px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 153, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* ═══════════════════════════════════════════════════════════ */
+        /* SECTIONS */
+        /* ═══════════════════════════════════════════════════════════ */
+        section {
+            min-height: 100vh;
+            padding: 8rem 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -20px;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+        }
+
+        /* ═══════════════════════════════════════════════════════════ */
+        /* ABOUT */
+        /* ═══════════════════════════════════════════════════════════ */
+        #about {
+            background: var(--bg-secondary);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-text p {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .about-text strong {
+            color: var(--accent);
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .skill-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .skill-item:hover {
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        .skill-item strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        /* ═══════════════════════════════════════════════════════════ */
+        /* PROJECTS */
+        /* ═══════════════════════════════════════════════════════════ */
+        #projects {
+            background: var(--bg);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 153, 255, 0.1));
+            transition: top 0.3s;
+        }
+
+        .project-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-10px);
+        }
+
+        .project-card:hover::before {
+            top: 0;
+        }
+
+        .project-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .project-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+
+        .project-card p {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            border-radius: 2px;
+            font-size: 0.75rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ═══════════════════════════════════════════════════════════ */
+        /* CONTACT */
+        /* ═══════════════════════════════════════════════════════════ */
+        #contact {
+            background: var(--bg-secondary);
+            text-align: center;
+        }
+
+        .contact-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .contact-content p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .contact-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .contact-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .contact-link:hover {
+            background: var(--accent);
+            color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        /* ═══════════════════════════════════════════════════════════ */
+        /* FOOTER */
+        /* ═══════════════════════════════════════════════════════════ */
+        footer {
+            padding: 2rem 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ═══════════════════════════════════════════════════════════ */
+        /* RESPONSIVE */
+        /* ═══════════════════════════════════════════════════════════ */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1.5rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+                font-size: 0.85rem;
+            }
+
+            section {
+                padding: 4rem 1.5rem;
+            }
+
+            .about-content,
+            .hero-buttons {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .blob {
+                opacity: 0.05;
+            }
         }
     </style>
 </head>
 <body>
-    <canvas id="three"></canvas>
-    
-    <div class="hud hud-top">
-        <div>⚡ RUHANI BAJAJ — INTERACTIVE GALLERY ⚡</div>
+    <!-- Background Animation -->
+    <div class="bg-animation">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
     </div>
-    
-    <div class="hud hud-bottom">
-        <div>▶ WASD: Move | 🖱 Mouse: Look | 🔒 Click Lock | 📌 E: Interact</div>
-    </div>
-    
-    <div class="hud hud-hint" id="hint">➜ Press E to view details</div>
-    
-    <div class="panel" id="panel">
-        <button onclick="document.getElementById('panel').classList.remove('show')">✕</button>
-        <h2 id="panel-title"></h2>
-        <div id="panel-text"></div>
-    </div>
+
+    <!-- Custom Cursor -->
+    <div id="cursor"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">RB</div>
+        <div class="nav-links">
+            <a href="#about">About</a>
+            <a href="#projects">Projects</a>
+            <a href="#contact">Contact</a>
+        </div>
+        <button class="cta-button">Resume</button>
+    </nav>
+
+    <!-- Hero -->
+    <section id="hero">
+        <p class="hero-subtitle">Welcome to my portfolio</p>
+        <h1 class="hero-title">
+            I build <span>brands</span> that<br>
+            <span>people remember</span>
+        </h1>
+        <p class="hero-desc">
+            Brand strategist and marketing professional. I help businesses cut through noise and connect with their audience in ways that actually convert.
+        </p>
+        <div class="hero-buttons">
+            <button class="btn-primary">Get Started</button>
+            <button class="btn-secondary">Learn More</button>
+        </div>
+        <div class="scroll-indicator">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+        <h2 class="section-title">About Me</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <p>
+                    I'm <strong>Ruhani Bajaj</strong>, a brand strategist and marketing professional pursuing my <strong>MSc in Management at the University of Birmingham</strong>.
+                </p>
+                <p>
+                    I blend commercial thinking with creative instinct to build brands that people love. I've worked across digital marketing, content strategy, and business operations.
+                </p>
+                <p>
+                    I founded <strong>Escalate</strong>, a social media marketing agency, gaining hands-on experience in brand-building from the ground up.
+                </p>
+            </div>
+            <div class="skills-grid">
+                <div class="skill-item">
+                    <strong>Brand Strategy</strong>
+                    <p>Positioning & messaging</p>
+                </div>
+                <div class="skill-item">
+                    <strong>Content Marketing</strong>
+                    <p>SEO & copywriting</p>
+                </div>
+                <div class="skill-item">
+                    <strong>Paid Social</strong>
+                    <p>Campaign optimization</p>
+                </div>
+                <div class="skill-item">
+                    <strong>Market Research</strong>
+                    <p>Consumer insights</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="projects">
+        <h2 class="section-title">Featured Work</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-content">
+                    <h3>Escalate Agency</h3>
+                    <p>Social media marketing agency helping SMEs build authentic brands through strategic content and paid advertising.</p>
+                    <div class="project-tags">
+                        <span class="tag">Strategy</span>
+                        <span class="tag">Social Media</span>
+                        <span class="tag">Analytics</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-content">
+                    <h3>Silver Fern Education</h3>
+                    <p>Increased organic reach by 40% through SEO-optimized content and strategic social media campaigns.</p>
+                    <div class="project-tags">
+                        <span class="tag">SEO</span>
+                        <span class="tag">Content</span>
+                        <span class="tag">Growth</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <div class="project-content">
+                    <h3>Brand Research</h3>
+                    <p>Comprehensive consumer insight analysis for luxury brand positioning and market differentiation.</p>
+                    <div class="project-tags">
+                        <span class="tag">Research</span>
+                        <span class="tag">Luxury</span>
+                        <span class="tag">Insights</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact">
+        <h2 class="section-title">Let's Work Together</h2>
+        <div class="contact-content">
+            <p>
+                I'm always interested in hearing about new projects and opportunities. Feel free to reach out if you'd like to collaborate on something amazing.
+            </p>
+            <div class="contact-links">
+                <a href="mailto:ruhanibajaj1@gmail.com" class="contact-link">📧 Email</a>
+                <a href="https://linkedin.com/in/ruhani-bajajrb" target="_blank" class="contact-link">💼 LinkedIn</a>
+                <a href="tel:+4407352685719" class="contact-link">📱 Phone</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>© 2025 Ruhani Bajaj. Built with intention.</p>
+    </footer>
 
     <script>
-        // Canvas setup
-        const canvas = document.getElementById('three');
-        const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x0a0a0a);
-        scene.fog = new THREE.Fog(0x0a0a0a, 50, 150);
-
-        const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000);
-        camera.position.set(0, 1.7, 0);
-
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.shadowMap.enabled = true;
-        renderer.shadowMap.type = THREE.PCFShadowShadowMap;
-
-        // ════════════════════════════════════════════════════════════
-        // ADVANCED LIGHTING
-        // ════════════════════════════════════════════════════════════
-        const ambLight = new THREE.AmbientLight(0xffffff, 0.3);
-        scene.add(ambLight);
-
-        // Cyan lights
-        const cyanLight = new THREE.PointLight(0x00ffff, 2, 100);
-        cyanLight.position.set(30, 15, 30);
-        scene.add(cyanLight);
-
-        // Magenta lights
-        const magentaLight = new THREE.PointLight(0xff00ff, 2, 100);
-        magentaLight.position.set(-30, 15, -30);
-        scene.add(magentaLight);
-
-        // Yellow light
-        const yellowLight = new THREE.PointLight(0xffff00, 1.5, 80);
-        yellowLight.position.set(0, 20, 0);
-        scene.add(yellowLight);
-
-        // Additional colored lights
-        const limeLight = new THREE.PointLight(0x39ff14, 1.5, 80);
-        limeLight.position.set(30, 15, -30);
-        scene.add(limeLight);
-
-        // ════════════════════════════════════════════════════════════
-        // MATERIALS WITH COLORS
-        // ════════════════════════════════════════════════════════════
-        const materials = {
-            floor: new THREE.MeshStandardMaterial({ 
-                color: 0x0f1419, 
-                roughness: 0.9,
-                metalness: 0.1
-            }),
-            wall: new THREE.MeshStandardMaterial({ 
-                color: 0x0a0a14, 
-                roughness: 0.95,
-                metalness: 0
-            }),
-            frameAbout: new THREE.MeshStandardMaterial({ 
-                color: 0x00ffff, 
-                emissive: 0x00aaff,
-                metalness: 0.8, 
-                roughness: 0.2
-            }),
-            frameExperience: new THREE.MeshStandardMaterial({ 
-                color: 0xff00ff, 
-                emissive: 0xaa00ff,
-                metalness: 0.8, 
-                roughness: 0.2
-            }),
-            frameEscalate: new THREE.MeshStandardMaterial({ 
-                color: 0x39ff14, 
-                emissive: 0x00ff00,
-                metalness: 0.8, 
-                roughness: 0.2
-            }),
-            frameSkills: new THREE.MeshStandardMaterial({ 
-                color: 0xffff00, 
-                emissive: 0xaaaa00,
-                metalness: 0.8, 
-                roughness: 0.2
-            }),
-            frameWriting: new THREE.MeshStandardMaterial({ 
-                color: 0xff6600, 
-                emissive: 0xaa4400,
-                metalness: 0.8, 
-                roughness: 0.2
-            }),
-            frameContact: new THREE.MeshStandardMaterial({ 
-                color: 0x00ccff, 
-                emissive: 0x0099ff,
-                metalness: 0.8, 
-                roughness: 0.2
-            })
-        };
-
-        // ════════════════════════════════════════════════════════════
-        // FLOOR WITH GRADIENT
-        // ════════════════════════════════════════════════════════════
-        const floorCanvas = document.createElement('canvas');
-        floorCanvas.width = 512;
-        floorCanvas.height = 512;
-        const floorCtx = floorCanvas.getContext('2d');
-        
-        const grad = floorCtx.createLinearGradient(0, 0, 512, 512);
-        grad.addColorStop(0, '#1a1a2e');
-        grad.addColorStop(0.5, '#0f0f1a');
-        grad.addColorStop(1, '#000000');
-        floorCtx.fillStyle = grad;
-        floorCtx.fillRect(0, 0, 512, 512);
-        
-        // Add grid pattern
-        floorCtx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
-        floorCtx.lineWidth = 1;
-        for (let i = 0; i < 512; i += 32) {
-            floorCtx.beginPath();
-            floorCtx.moveTo(i, 0);
-            floorCtx.lineTo(i, 512);
-            floorCtx.stroke();
-            floorCtx.beginPath();
-            floorCtx.moveTo(0, i);
-            floorCtx.lineTo(512, i);
-            floorCtx.stroke();
-        }
-
-        const floorTexture = new THREE.CanvasTexture(floorCanvas);
-        const floorMaterial = new THREE.MeshStandardMaterial({ 
-            map: floorTexture,
-            roughness: 0.8,
-            metalness: 0.1
+        // Custom cursor
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
         });
 
-        const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), floorMaterial);
-        floor.rotation.x = -Math.PI / 2;
-        floor.position.y = -0.1;
-        floor.receiveShadow = true;
-        scene.add(floor);
-
-        // ════════════════════════════════════════════════════════════
-        // WALLS
-        // ════════════════════════════════════════════════════════════
-        function addWall(width, height, posX, posY, posZ, rotY = 0) {
-            const wall = new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.5), materials.wall);
-            wall.position.set(posX, posY, posZ);
-            wall.rotation.y = rotY;
-            wall.receiveShadow = true;
-            wall.castShadow = true;
-            scene.add(wall);
-        }
-
-        addWall(80, 20, 0, 10, 40);      // Back
-        addWall(80, 20, 0, 10, -40);     // Front
-        addWall(1, 20, 40, 10, 0, Math.PI / 2);  // Right
-        addWall(1, 20, -40, 10, 0, Math.PI / 2); // Left
-
-        // ═══════════════��════════════════════════════════════════════
-        // COLORED ARTWORKS
-        // ════════════════════════════════════════════════════════════
-        const artworks = [];
-        const artInfo = [
-            { 
-                pos: [0, 3, 35], 
-                material: materials.frameAbout,
-                title: 'ABOUT', 
-                text: 'Brand Strategist & Marketing Professional\n\nMSc Management, University of Birmingham\nGraduate Route Visa - Open to Full-Time Roles\n\nI build brands people remember through data-driven strategy and creative storytelling.' 
-            },
-            { 
-                pos: [-20, 3, 35], 
-                material: materials.frameExperience,
-                title: 'EXPERIENCE', 
-                text: '2026-Present: Brand Ambassador @ Canva\nCampus activations, product testing\n\nJun-Sep 2025: Marketing Intern @ Silver Fern\n10+ SEO blogs, 30+ social posts\n\nApr-Jun 2024: Social Media Intern @ YouVah\n\nJul-Dec 2024: Operations Intern @ Assam Wood' 
-            },
-            { 
-                pos: [20, 3, 35], 
-                material: materials.frameEscalate,
-                title: 'ESCALATE', 
-                text: 'Social Media Marketing Agency\nFounded 2023 — Sunset 2024\n\nServices:\n• Content Strategy\n• Paid Social Ads\n• Influencer Marketing\n• Brand Positioning\n• Analytics & Reporting' 
-            },
-            { 
-                pos: [-30, 3, 0], 
-                material: materials.frameSkills,
-                title: 'SKILLS', 
-                text: 'Brand Positioning\nCampaign Strategy\nSEO & Copywriting\nPaid Social\nConsumer Psychology\nMarket Research\nInfluencer Marketing\nFinancial Analysis\nExcel & Python' 
-            },
-            { 
-                pos: [30, 3, 0], 
-                material: materials.frameWriting,
-                title: 'WRITING', 
-                text: 'Coming Soon:\n\n01. Brand Voice vs Logo\n02. Instagram Algorithm 2025\n03. Luxury Brand Secrets\n04. Founding at 21\n05. Gen Z & Advertising' 
-            },
-            { 
-                pos: [0, 3, -35], 
-                material: materials.frameContact,
-                title: 'CONTACT', 
-                text: 'Email: ruhanibajaj1@gmail.com\nPhone: (+44) 07352 685719\nLinkedIn: ruhani-bajajrb\n\nOpen to:\n→ Brand Strategy\n→ Marketing Positions\n→ Luxury Opportunities\n→ Consultancy Work' 
-            }
-        ];
-
-        artInfo.forEach((info, i) => {
-            const frame = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 0.1), info.material);
-            frame.position.set(...info.pos);
-            frame.castShadow = true;
-            frame.receiveShadow = true;
-            frame.userData = { 
-                title: info.title, 
-                text: info.text,
-                material: info.material
-            };
-            scene.add(frame);
-            artworks.push(frame);
-
-            // Add glow effect with sphere
-            const glowGeo = new THREE.IcosahedronGeometry(2, 4);
-            const glowMat = new THREE.MeshBasicMaterial({
-                color: info.material.color,
-                transparent: true,
-                opacity: 0.1,
-                wireframe: true
-            });
-            const glow = new THREE.Mesh(glowGeo, glowMat);
-            glow.position.set(...info.pos);
-            scene.add(glow);
+        // Hover effect
+        const interactive = document.querySelectorAll('a, button, .skill-item, .project-card, .contact-link');
+        interactive.forEach(el => {
+            el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+            el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
         });
 
-        // ════════════════════════════════════════════════════════════
-        // PLAYER CONTROLS
-        // ════════════════════════════════════════════════════════════
-        let yaw = 0, pitch = 0;
-        let locked = false;
-        const keys = {};
+        // GSAP animations
+        gsap.registerPlugin(ScrollTrigger);
 
-        document.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
-        document.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
-
-        document.addEventListener('mousemove', e => {
-            if (locked) {
-                yaw -= e.movementX * 0.008;
-                pitch -= e.movementY * 0.008;
-                pitch = Math.max(-Math.PI / 2.3, Math.min(Math.PI / 2.3, pitch));
-            }
-        });
-
-        canvas.addEventListener('click', () => {
-            canvas.requestPointerLock();
-        });
-
-        document.addEventListener('pointerlockchange', () => {
-            locked = document.pointerLockElement === canvas;
-        });
-
-        // ════════════════════════════════════════════════════════════
-        // INTERACTION
-        // ════════════════════════════════════════════════════════════
-        const raycaster = new THREE.Raycaster();
-        let hovered = null;
-
-        function checkHover() {
-            const dir = new THREE.Vector3(0, 0, -1);
-            dir.applyAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
-            raycaster.set(camera.position, dir);
-
-            const hits = raycaster.intersectObjects(artworks);
-            if (hits.length && hits[0].distance < 20) {
-                hovered = hits[0].object;
-                document.getElementById('hint').classList.add('show');
-            } else {
-                hovered = null;
-                document.getElementById('hint').classList.remove('show');
-            }
-        }
-
-        document.addEventListener('keydown', e => {
-            if (e.key === 'e' && hovered) {
-                const data = hovered.userData;
-                document.getElementById('panel-title').textContent = data.title;
-                document.getElementById('panel-text').textContent = data.text;
-                document.getElementById('panel').classList.add('show');
-            }
-        });
-
-        // ════════════════════════════════════════════════════════════
-        // ANIMATION LOOP
-        // ════════════════════════════════════════════════════════════
-        let time = 0;
-        function animate() {
-            requestAnimationFrame(animate);
-            time += 0.016;
-
-            // Movement
-            let mx = 0, mz = 0;
-            if (keys['w']) mz -= 0.15;
-            if (keys['s']) mz += 0.15;
-            if (keys['a']) mx -= 0.15;
-            if (keys['d']) mx += 0.15;
-
-            const c = Math.cos(yaw), s = Math.sin(yaw);
-            camera.position.x += mx * c - mz * s;
-            camera.position.z += mx * s + mz * c;
-
-            // Bounds
-            camera.position.x = Math.max(-38, Math.min(38, camera.position.x));
-            camera.position.z = Math.max(-38, Math.min(38, camera.position.z));
-
-            // Rotation
-            camera.rotation.order = 'YXZ';
-            camera.rotation.y = yaw;
-            camera.rotation.x = pitch;
-
-            // Update artworks with animation
-            artworks.forEach((art, i) => {
-                art.position.y = 3 + Math.sin(time + i) * 0.3;
-                art.rotation.z = Math.sin(time * 0.5 + i * 0.5) * 0.1;
-                art.rotation.x = Math.cos(time * 0.3 + i * 0.5) * 0.05;
-                
-                if (art === hovered) {
-                    art.scale.set(1.1, 1.1, 1.1);
-                } else {
-                    art.scale.set(1, 1, 1);
+        gsap.utils.toArray('section').forEach(section => {
+            gsap.from(section, {
+                opacity: 0,
+                y: 50,
+                duration: 0.8,
+                scrollTrigger: {
+                    trigger: section,
+                    start: 'top 80%',
+                    once: true
                 }
             });
+        });
 
-            checkHover();
-            renderer.render(scene, camera);
-        }
-
-        animate();
-
-        // Resize
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
+        // Smooth scroll for nav
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    gsap.to(window, {
+                        duration: 1,
+                        scrollTo: target,
+                        ease: 'power2.inOut'
+                    });
+                }
+            });
         });
     </script>
 </body>
