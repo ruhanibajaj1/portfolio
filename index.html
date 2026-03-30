@@ -17,17 +17,43 @@
             z-index: 100;
         }
         
-        .hud-top { top: 20px; left: 20px; font-size: 14px; }
-        .hud-bottom { bottom: 20px; left: 20px; font-size: 12px; color: #888; }
-        .hud-hint { bottom: 80px; left: 20px; font-size: 12px; opacity: 0; transition: 0.3s; }
+        .hud-top { 
+            top: 20px; 
+            left: 20px; 
+            font-size: 14px;
+            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: bold;
+        }
+        
+        .hud-bottom { 
+            bottom: 20px; 
+            left: 20px; 
+            font-size: 12px; 
+            color: #00ff88;
+            text-shadow: 0 0 10px #00ff88;
+        }
+        
+        .hud-hint { 
+            bottom: 80px; 
+            left: 20px; 
+            font-size: 12px; 
+            opacity: 0; 
+            transition: 0.3s;
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff00;
+        }
+        
         .hud-hint.show { opacity: 1; }
         
         .panel {
             position: fixed;
             bottom: 20px;
             left: 20px;
-            background: rgba(0,0,0,0.9);
-            border: 1px solid #fff;
+            background: rgba(0,0,0,0.95);
+            border: 2px solid #00ffff;
             padding: 20px;
             max-width: 350px;
             color: #fff;
@@ -38,38 +64,63 @@
             display: none;
             z-index: 200;
             line-height: 1.6;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
         }
         
         .panel.show { display: block; }
-        .panel h2 { margin-bottom: 10px; font-size: 14px; border-bottom: 1px solid #555; padding-bottom: 5px; }
-        .panel button { position: absolute; top: 5px; right: 5px; background: #fff; border: none; cursor: pointer; width: 20px; height: 20px; }
+        .panel h2 { 
+            margin-bottom: 10px; 
+            font-size: 14px; 
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border-bottom: 1px solid #00ffff;
+            padding-bottom: 5px;
+            font-weight: bold;
+        }
+        .panel button { 
+            position: absolute; 
+            top: 5px; 
+            right: 5px; 
+            background: #00ffff;
+            border: none; 
+            cursor: pointer; 
+            width: 20px; 
+            height: 20px;
+            color: #000;
+            font-weight: bold;
+        }
+        .panel button:hover {
+            background: #ff00ff;
+        }
     </style>
 </head>
 <body>
     <canvas id="three"></canvas>
     
     <div class="hud hud-top">
-        <div>RUHANI BAJAJ — INTERACTIVE GALLERY</div>
+        <div>⚡ RUHANI BAJAJ — INTERACTIVE GALLERY ⚡</div>
     </div>
     
     <div class="hud hud-bottom">
-        <div>WASD: Move | Mouse: Look | Click to Lock | E: Interact</div>
+        <div>▶ WASD: Move | 🖱 Mouse: Look | 🔒 Click Lock | 📌 E: Interact</div>
     </div>
     
-    <div class="hud hud-hint" id="hint">→ Press E to view</div>
+    <div class="hud hud-hint" id="hint">➜ Press E to view details</div>
     
     <div class="panel" id="panel">
-        <button onclick="document.getElementById('panel').classList.remove('show')">×</button>
+        <button onclick="document.getElementById('panel').classList.remove('show')">✕</button>
         <h2 id="panel-title"></h2>
         <div id="panel-text"></div>
     </div>
 
     <script>
-        // Setup
+        // Canvas setup
         const canvas = document.getElementById('three');
         const scene = new THREE.Scene();
-        scene.background = new THREE.Color(0x000000);
-        scene.fog = new THREE.Fog(0x000000, 50, 150);
+        scene.background = new THREE.Color(0x0a0a0a);
+        scene.fog = new THREE.Fog(0x0a0a0a, 50, 150);
 
         const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 1000);
         camera.position.set(0, 1.7, 0);
@@ -77,41 +128,137 @@
         const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFShadowShadowMap;
 
-        // Lights
-        const ambLight = new THREE.AmbientLight(0xffffff, 0.6);
+        // ════════════════════════════════════════════════════════════
+        // ADVANCED LIGHTING
+        // ════════════════════════════════════════════════════════════
+        const ambLight = new THREE.AmbientLight(0xffffff, 0.3);
         scene.add(ambLight);
 
-        for (let i = 0; i < 4; i++) {
-            const light = new THREE.PointLight(0xffffff, 1, 100);
-            light.position.set(
-                Math.cos(i * Math.PI / 2) * 30,
-                15,
-                Math.sin(i * Math.PI / 2) * 30
-            );
-            scene.add(light);
-        }
+        // Cyan lights
+        const cyanLight = new THREE.PointLight(0x00ffff, 2, 100);
+        cyanLight.position.set(30, 15, 30);
+        scene.add(cyanLight);
 
-        // Gallery Geometry
+        // Magenta lights
+        const magentaLight = new THREE.PointLight(0xff00ff, 2, 100);
+        magentaLight.position.set(-30, 15, -30);
+        scene.add(magentaLight);
+
+        // Yellow light
+        const yellowLight = new THREE.PointLight(0xffff00, 1.5, 80);
+        yellowLight.position.set(0, 20, 0);
+        scene.add(yellowLight);
+
+        // Additional colored lights
+        const limeLight = new THREE.PointLight(0x39ff14, 1.5, 80);
+        limeLight.position.set(30, 15, -30);
+        scene.add(limeLight);
+
+        // ════════════════════════════════════════════════════════════
+        // MATERIALS WITH COLORS
+        // ════════════════════════════════════════════════════════════
         const materials = {
-            floor: new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.9 }),
-            wall: new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.95 }),
-            frame: new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.5, roughness: 0.5 })
+            floor: new THREE.MeshStandardMaterial({ 
+                color: 0x0f1419, 
+                roughness: 0.9,
+                metalness: 0.1
+            }),
+            wall: new THREE.MeshStandardMaterial({ 
+                color: 0x0a0a14, 
+                roughness: 0.95,
+                metalness: 0
+            }),
+            frameAbout: new THREE.MeshStandardMaterial({ 
+                color: 0x00ffff, 
+                emissive: 0x00aaff,
+                metalness: 0.8, 
+                roughness: 0.2
+            }),
+            frameExperience: new THREE.MeshStandardMaterial({ 
+                color: 0xff00ff, 
+                emissive: 0xaa00ff,
+                metalness: 0.8, 
+                roughness: 0.2
+            }),
+            frameEscalate: new THREE.MeshStandardMaterial({ 
+                color: 0x39ff14, 
+                emissive: 0x00ff00,
+                metalness: 0.8, 
+                roughness: 0.2
+            }),
+            frameSkills: new THREE.MeshStandardMaterial({ 
+                color: 0xffff00, 
+                emissive: 0xaaaa00,
+                metalness: 0.8, 
+                roughness: 0.2
+            }),
+            frameWriting: new THREE.MeshStandardMaterial({ 
+                color: 0xff6600, 
+                emissive: 0xaa4400,
+                metalness: 0.8, 
+                roughness: 0.2
+            }),
+            frameContact: new THREE.MeshStandardMaterial({ 
+                color: 0x00ccff, 
+                emissive: 0x0099ff,
+                metalness: 0.8, 
+                roughness: 0.2
+            })
         };
 
-        // Floor
-        const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), materials.floor);
+        // ════════════════════════════════════════════════════════════
+        // FLOOR WITH GRADIENT
+        // ════════════════════════════════════════════════════════════
+        const floorCanvas = document.createElement('canvas');
+        floorCanvas.width = 512;
+        floorCanvas.height = 512;
+        const floorCtx = floorCanvas.getContext('2d');
+        
+        const grad = floorCtx.createLinearGradient(0, 0, 512, 512);
+        grad.addColorStop(0, '#1a1a2e');
+        grad.addColorStop(0.5, '#0f0f1a');
+        grad.addColorStop(1, '#000000');
+        floorCtx.fillStyle = grad;
+        floorCtx.fillRect(0, 0, 512, 512);
+        
+        // Add grid pattern
+        floorCtx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+        floorCtx.lineWidth = 1;
+        for (let i = 0; i < 512; i += 32) {
+            floorCtx.beginPath();
+            floorCtx.moveTo(i, 0);
+            floorCtx.lineTo(i, 512);
+            floorCtx.stroke();
+            floorCtx.beginPath();
+            floorCtx.moveTo(0, i);
+            floorCtx.lineTo(512, i);
+            floorCtx.stroke();
+        }
+
+        const floorTexture = new THREE.CanvasTexture(floorCanvas);
+        const floorMaterial = new THREE.MeshStandardMaterial({ 
+            map: floorTexture,
+            roughness: 0.8,
+            metalness: 0.1
+        });
+
+        const floor = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), floorMaterial);
         floor.rotation.x = -Math.PI / 2;
         floor.position.y = -0.1;
         floor.receiveShadow = true;
         scene.add(floor);
 
-        // Walls
+        // ════════════════════════════════════════════════════════════
+        // WALLS
+        // ════════════════════════════════════════════════════════════
         function addWall(width, height, posX, posY, posZ, rotY = 0) {
             const wall = new THREE.Mesh(new THREE.BoxGeometry(width, height, 0.5), materials.wall);
             wall.position.set(posX, posY, posZ);
             wall.rotation.y = rotY;
             wall.receiveShadow = true;
+            wall.castShadow = true;
             scene.add(wall);
         }
 
@@ -120,28 +267,78 @@
         addWall(1, 20, 40, 10, 0, Math.PI / 2);  // Right
         addWall(1, 20, -40, 10, 0, Math.PI / 2); // Left
 
-        // Artworks (frames on walls)
+        // ═══════════════��════════════════════════════════════════════
+        // COLORED ARTWORKS
+        // ════════════════════════════════════════════════════════════
         const artworks = [];
         const artInfo = [
-            { pos: [0, 3, 35], title: 'ABOUT', text: 'Brand Strategist & Marketing Professional\n\nMSc Management, University of Birmingham\nGraduate Route Visa - Open to Full-Time Roles\n\nI build brands people remember through data-driven strategy and creative storytelling.' },
-            { pos: [-20, 3, 35], title: 'EXPERIENCE', text: '2026-Present: Brand Ambassador @ Canva\nCampus activations, product testing\n\nJun-Sep 2025: Marketing Intern @ Silver Fern\n10+ SEO blogs, 30+ social posts\n\nApr-Jun 2024: Social Media Intern @ YouVah\n\nJul-Dec 2024: Operations Intern @ Assam Wood' },
-            { pos: [20, 3, 35], title: 'ESCALATE', text: 'Social Media Marketing Agency\nFounded 2023 — Sunset 2024\n\nServices:\n• Content Strategy\n• Paid Social Ads\n• Influencer Marketing\n• Brand Positioning\n• Analytics & Reporting' },
-            { pos: [-30, 3, 0], title: 'SKILLS', text: 'Brand Positioning\nCampaign Strategy\nSEO & Copywriting\nPaid Social\nConsumer Psychology\nMarket Research\nInfluencer Marketing\nFinancial Analysis\nExcel & Python' },
-            { pos: [30, 3, 0], title: 'WRITING', text: 'Coming Soon:\n\n01. Brand Voice vs Logo\n02. Instagram Algorithm 2025\n03. Luxury Brand Secrets\n04. Founding at 21\n05. Gen Z & Advertising' },
-            { pos: [0, 3, -35], title: 'CONTACT', text: 'Email: ruhanibajaj1@gmail.com\nPhone: (+44) 07352 685719\nLinkedIn: ruhani-bajajrb\n\nOpen to:\n→ Brand Strategy\n→ Marketing Positions\n→ Luxury Opportunities\n→ Consultancy Work' }
+            { 
+                pos: [0, 3, 35], 
+                material: materials.frameAbout,
+                title: 'ABOUT', 
+                text: 'Brand Strategist & Marketing Professional\n\nMSc Management, University of Birmingham\nGraduate Route Visa - Open to Full-Time Roles\n\nI build brands people remember through data-driven strategy and creative storytelling.' 
+            },
+            { 
+                pos: [-20, 3, 35], 
+                material: materials.frameExperience,
+                title: 'EXPERIENCE', 
+                text: '2026-Present: Brand Ambassador @ Canva\nCampus activations, product testing\n\nJun-Sep 2025: Marketing Intern @ Silver Fern\n10+ SEO blogs, 30+ social posts\n\nApr-Jun 2024: Social Media Intern @ YouVah\n\nJul-Dec 2024: Operations Intern @ Assam Wood' 
+            },
+            { 
+                pos: [20, 3, 35], 
+                material: materials.frameEscalate,
+                title: 'ESCALATE', 
+                text: 'Social Media Marketing Agency\nFounded 2023 — Sunset 2024\n\nServices:\n• Content Strategy\n• Paid Social Ads\n• Influencer Marketing\n• Brand Positioning\n• Analytics & Reporting' 
+            },
+            { 
+                pos: [-30, 3, 0], 
+                material: materials.frameSkills,
+                title: 'SKILLS', 
+                text: 'Brand Positioning\nCampaign Strategy\nSEO & Copywriting\nPaid Social\nConsumer Psychology\nMarket Research\nInfluencer Marketing\nFinancial Analysis\nExcel & Python' 
+            },
+            { 
+                pos: [30, 3, 0], 
+                material: materials.frameWriting,
+                title: 'WRITING', 
+                text: 'Coming Soon:\n\n01. Brand Voice vs Logo\n02. Instagram Algorithm 2025\n03. Luxury Brand Secrets\n04. Founding at 21\n05. Gen Z & Advertising' 
+            },
+            { 
+                pos: [0, 3, -35], 
+                material: materials.frameContact,
+                title: 'CONTACT', 
+                text: 'Email: ruhanibajaj1@gmail.com\nPhone: (+44) 07352 685719\nLinkedIn: ruhani-bajajrb\n\nOpen to:\n→ Brand Strategy\n→ Marketing Positions\n→ Luxury Opportunities\n→ Consultancy Work' 
+            }
         ];
 
         artInfo.forEach((info, i) => {
-            const frame = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 0.1), materials.frame);
+            const frame = new THREE.Mesh(new THREE.BoxGeometry(3, 3, 0.1), info.material);
             frame.position.set(...info.pos);
             frame.castShadow = true;
             frame.receiveShadow = true;
-            frame.userData = { title: info.title, text: info.text };
+            frame.userData = { 
+                title: info.title, 
+                text: info.text,
+                material: info.material
+            };
             scene.add(frame);
             artworks.push(frame);
+
+            // Add glow effect with sphere
+            const glowGeo = new THREE.IcosahedronGeometry(2, 4);
+            const glowMat = new THREE.MeshBasicMaterial({
+                color: info.material.color,
+                transparent: true,
+                opacity: 0.1,
+                wireframe: true
+            });
+            const glow = new THREE.Mesh(glowGeo, glowMat);
+            glow.position.set(...info.pos);
+            scene.add(glow);
         });
 
-        // Player
+        // ════════════════════════════════════════════════════════════
+        // PLAYER CONTROLS
+        // ════════════════════════════════════════════════════════════
         let yaw = 0, pitch = 0;
         let locked = false;
         const keys = {};
@@ -165,7 +362,9 @@
             locked = document.pointerLockElement === canvas;
         });
 
-        // Interaction
+        // ════════════════════════════════════════════════════════════
+        // INTERACTION
+        // ════════════════════════════════════════════════════════════
         const raycaster = new THREE.Raycaster();
         let hovered = null;
 
@@ -193,9 +392,13 @@
             }
         });
 
-        // Main loop
+        // ════════════════════════════════════════════════════════════
+        // ANIMATION LOOP
+        // ════════════════════════════════════════════════════════════
+        let time = 0;
         function animate() {
             requestAnimationFrame(animate);
+            time += 0.016;
 
             // Movement
             let mx = 0, mz = 0;
@@ -217,13 +420,16 @@
             camera.rotation.y = yaw;
             camera.rotation.x = pitch;
 
-            // Update artworks
+            // Update artworks with animation
             artworks.forEach((art, i) => {
-                art.position.y = 3 + Math.sin(Date.now() * 0.001 + i) * 0.2;
+                art.position.y = 3 + Math.sin(time + i) * 0.3;
+                art.rotation.z = Math.sin(time * 0.5 + i * 0.5) * 0.1;
+                art.rotation.x = Math.cos(time * 0.3 + i * 0.5) * 0.05;
+                
                 if (art === hovered) {
-                    art.material.emissive.setHex(0x333333);
+                    art.scale.set(1.1, 1.1, 1.1);
                 } else {
-                    art.material.emissive.setHex(0x0a0a0a);
+                    art.scale.set(1, 1, 1);
                 }
             });
 
