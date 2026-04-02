@@ -3,111 +3,707 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruhani Bajaj - Creative Strategist & Builder</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Ruhani Bajaj - Strategic Marketing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0f0f0f;
+            color: #ffffff;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* ════════════════════════════════════════════════════════════ */
+        /* CURSOR */
+        /* ════════════════════════════════════════════════════════════ */
+        .cursor-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: #00d4ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: screen;
+            box-shadow: 0 0 20px #00d4ff;
+        }
+
+        .cursor-dot.active {
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 30px #ff00ff;
+        }
+
+        /* ════════════════════════════════════════════════════════════ */
+        /* PRELOADER */
+        /* ════════════════════════════════════════════════════════════ */
+        .preloader {
+            position: fixed;
+            inset: 0;
+            background: #0f0f0f;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .preloader.hidden {
+            animation: fadeOut 0.8s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                visibility: hidden;
+            }
+        }
+
+        .loader-text {
+            font-size: 14px;
+            letter-spacing: 2px;
+            animation: pulse-text 1.5s infinite;
+        }
+
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .loader-line {
+            width: 150px;
+            height: 2px;
+            background: linear-gradient(90deg, #00d4ff, #ff00ff, #00d4ff);
+            animation: slide 2s infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* ════════════════════════════════════════════════════════════ */
+        /* NAVIGATION */
+        /* ════════════════════════════════════════════════════════════ */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00d4ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .nav-item {
+            text-decoration: none;
+            color: #999;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #00d4ff;
+            transition: width 0.3s;
+        }
+
+        .nav-item:hover {
+            color: #fff;
+        }
+
+        .nav-item:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            padding: 0.7rem 1.5rem;
+            background: #00d4ff;
+            color: #0f0f0f;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .nav-cta:hover {
+            background: #ff00ff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 0, 255, 0.3);
+        }
+
+        /* ════════════════════════════════════════════════════════════ */
+        /* HERO */
+        /* ════════════════════════════════════════════════════════════ */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 4rem 4rem;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.05) 0%, rgba(255, 0, 255, 0.05) 100%);
+        }
+
+        .hero-content {
+            max-width: 900px;
+            z-index: 1;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            border-radius: 20px;
+            color: #00d4ff;
+            font-size: 0.85rem;
+            margin-bottom: 2rem;
+            animation: slideInDown 0.8s ease;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 12vw, 5.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: slideInUp 0.8s ease 0.2s backwards;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, #00d4ff, #ff00ff, #ffbe0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: #aaa;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.8;
+            animation: slideInUp 0.8s ease 0.4s backwards;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: slideInUp 0.8s ease 0.6s backwards;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-primary {
+            background: #00d4ff;
+            color: #0f0f0f;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #ff00ff;
+            color: #ff00ff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 0, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .scroll-arrow {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            cursor: pointer;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(15px); }
+        }
+
+        /* ════════════════════════════════════════════════════════════ */
+        /* MARQUEE */
+        /* ════════════════════════════════════════════════════════════ */
+        .marquee-section {
+            background: #1a1a1a;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 0, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .marquee {
+            display: flex;
+            gap: 2rem;
+            animation: scroll 30s linear infinite;
+            white-space: nowrap;
+        }
+
+        .marquee-item {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ════════════════════════════════════════════════════════════ */
+        /* SECTIONS */
+        /* ════════════════════════════════════════════════════════════ */
+        section {
+            min-height: 100vh;
+            padding: 8rem 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        section:nth-child(even) {
+            background: #1a1a1a;
+        }
+
+        .section-header {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 8vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .section-title .gradient {
+            background: linear-gradient(135deg, #00d4ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            color: #aaa;
+            max-width: 600px;
+        }
+
+        /* ════════════════════════════════════════════════════════════ */
+        /* GRID SECTION */
+        /* ════════════════════════════════════════════════════════════ */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .grid-item {
+            padding: 2rem;
+            background: rgba(0, 212, 255, 0.02);
+            border: 1px solid rgba(0, 212, 255, 0.1);
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .grid-item:hover {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.08);
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+        }
+
+        .grid-item h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .grid-item p {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        .grid-item-tag {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(255, 0, 255, 0.1);
+            border: 1px solid #ff00ff;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #ff00ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ════════════════════════════════════════════════════════════ */
+        /* TIMELINE */
+        /* ════════════════════════════════════════════════════════════ */
+        .timeline {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .timeline-item:last-child {
+            border-bottom: none;
+        }
+
+        .timeline-year {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #00d4ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timeline-content h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-company {
+            font-size: 0.9rem;
+            color: #ff00ff;
+            margin-bottom: 0.8rem;
+        }
+
+        .timeline-desc {
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        /* ════════════════════════════════════════════════════════════ */
+        /* FOOTER */
+        /* ════════════════════════════════════════════════════════════ */
+        footer {
+            background: #0f0f0f;
+            padding: 4rem;
+            text-align: center;
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-title .gradient {
+            background: linear-gradient(135deg, #00d4ff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-text {
+            color: #aaa;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .footer-link {
+            padding: 0.8rem 1.5rem;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid #00d4ff;
+            color: #00d4ff;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .footer-link:hover {
+            background: #00d4ff;
+            color: #0f0f0f;
+        }
+
+        /* ════════════════════════════════════════════════════════════ */
+        /* RESPONSIVE */
+        /* ════════════════════════════════════════════════════════════ */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1.5rem 2rem;
+            }
+
+            .nav-menu {
+                gap: 1.5rem;
+                display: none;
+            }
+
+            section {
+                padding: 4rem 2rem;
+            }
+
+            .hero {
+                padding: 6rem 2rem 2rem;
+            }
+
+            .timeline-item {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline-year {
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Animated Background -->
-    <div class="animated-bg">
-        <div class="gradient-orb orb-1"></div>
-        <div class="gradient-orb orb-2"></div>
-        <div class="gradient-orb orb-3"></div>
+    <!-- Preloader -->
+    <div class="preloader" id="preloader">
+        <div class="loader-text">Loading Experience</div>
+        <div class="loader-line"></div>
     </div>
 
+    <!-- Cursor -->
+    <div class="cursor-dot"></div>
+
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-wrapper">
-            <a href="#" class="logo-link">
-                <span class="logo-text">RB</span>
-                <span class="logo-dot"></span>
-            </a>
-            <ul class="nav-menu">
-                <li><a href="#hero" class="nav-item" data-sound="hover">Home</a></li>
-                <li><a href="#about" class="nav-item" data-sound="hover">About</a></li>
-                <li><a href="#work" class="nav-item" data-sound="hover">Work</a></li>
-                <li><a href="#skills" class="nav-item" data-sound="hover">Skills</a></li>
-                <li><a href="#contact" class="nav-item" data-sound="hover">Contact</a></li>
-            </ul>
-            <div class="sound-control" id="soundControl" data-sound="click">
-                <span class="sound-icon">🔊</span>
-            </div>
+    <nav>
+        <div class="nav-brand">RB</div>
+        <div class="nav-menu">
+            <a href="#about" class="nav-item">About</a>
+            <a href="#experience" class="nav-item">Experience</a>
+            <a href="#work" class="nav-item">Work</a>
+            <a href="#contact" class="nav-item">Contact</a>
         </div>
+        <button class="nav-cta">Hire Me</button>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero">
+    <!-- Hero -->
+    <div class="hero">
         <div class="hero-content">
-            <div class="hero-text">
-                <h1 class="hero-title">
-                    <span class="char">C</span><span class="char">r</span><span class="char">e</span><span class="char">a</span><span class="char">t</span><span class="char">i</span><span class="char">v</span><span class="char">e</span>
-                    <br>
-                    <span class="char" style="color: var(--accent);">S</span><span class="char" style="color: var(--accent);">t</span><span class="char" style="color: var(--accent);">r</span><span class="char" style="color: var(--accent);">a</span><span class="char" style="color: var(--accent);">t</span><span class="char" style="color: var(--accent);">e</span><span class="char" style="color: var(--accent);">g</span><span class="char" style="color: var(--accent);">i</span><span class="char" style="color: var(--accent);">s</span><span class="char" style="color: var(--accent);">t</span>
-                </h1>
-                <p class="hero-subtitle">Building brands & experiences that matter</p>
-                <div class="cta-group">
-                    <button class="btn btn-primary" data-sound="click">View My Work</button>
-                    <button class="btn btn-secondary" data-sound="click">Let's Talk</button>
-                </div>
-            </div>
-            <div class="hero-visual">
-                <div class="floating-card card-1">
-                    <div class="card-icon">🎨</div>
-                    <p>Brand Strategy</p>
-                </div>
-                <div class="floating-card card-2">
-                    <div class="card-icon">📱</div>
-                    <p>Digital Marketing</p>
-                </div>
-                <div class="floating-card card-3">
-                    <div class="card-icon">🚀</div>
-                    <p>Growth</p>
-                </div>
+            <div class="hero-tag">Welcome to my portfolio</div>
+            <h1>
+                <span class="gradient">Strategic thinking</span><br>
+                meets creative execution
+            </h1>
+            <p>
+                I'm Ruhani Bajaj, a brand strategist helping businesses build brands that people remember. Let's create something incredible together.
+            </p>
+            <div class="hero-cta">
+                <button class="btn btn-primary">View My Work</button>
+                <button class="btn btn-secondary">Get in Touch</button>
             </div>
         </div>
-        <div class="scroll-indicator" data-sound="hover">
-            <span>Scroll to explore</span>
-            <div class="scroll-arrow"></div>
+        <div class="scroll-arrow">↓</div>
+    </div>
+
+    <!-- Marquee -->
+    <div class="marquee-section">
+        <div class="marquee">
+            <span class="marquee-item">BRAND STRATEGY</span>
+            <span class="marquee-item">•</span>
+            <span class="marquee-item">CONTENT MARKETING</span>
+            <span class="marquee-item">•</span>
+            <span class="marquee-item">SOCIAL MEDIA</span>
+            <span class="marquee-item">•</span>
+            <span class="marquee-item">MARKET RESEARCH</span>
+            <span class="marquee-item">•</span>
+            <span class="marquee-item">BRAND STRATEGY</span>
+            <span class="marquee-item">•</span>
+            <span class="marquee-item">CONTENT MARKETING</span>
+            <span class="marquee-item">•</span>
+            <span class="marquee-item">SOCIAL MEDIA</span>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="section-header">
+            <h2 class="section-title">About <span class="gradient">Me</span></h2>
+            <p class="section-subtitle">
+                Passionate brand strategist with experience across digital marketing, content creation, and business development. I blend data-driven insights with creative thinking.
+            </p>
+        </div>
+
+        <div class="grid-layout">
+            <div class="grid-item">
+                <h3>🎯 Brand Strategy</h3>
+                <p>Positioning, messaging, and market differentiation through research-backed insights.</p>
+                <span class="grid-item-tag">Strategic</span>
+            </div>
+            <div class="grid-item">
+                <h3>📱 Digital Marketing</h3>
+                <p>SEO, paid social, and content campaigns that drive measurable results.</p>
+                <span class="grid-item-tag">Marketing</span>
+            </div>
+            <div class="grid-item">
+                <h3>📊 Analytics</h3>
+                <p>Data-driven decision making with Excel, Python, and insights tools.</p>
+                <span class="grid-item-tag">Analysis</span>
+            </div>
+            <div class="grid-item">
+                <h3>✍️ Content Creation</h3>
+                <p>SEO-optimized writing and creative storytelling that resonates with audiences.</p>
+                <span class="grid-item-tag">Content</span>
+            </div>
+            <div class="grid-item">
+                <h3>🤝 Client Relations</h3>
+                <p>Building lasting partnerships through transparency and exceptional results.</p>
+                <span class="grid-item-tag">Relations</span>
+            </div>
+            <div class="grid-item">
+                <h3>🚀 Growth Hacking</h3>
+                <p>Scaling businesses through strategic campaigns and market expansion.</p>
+                <span class="grid-item-tag">Growth</span>
+            </div>
         </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="section-container">
-            <h2 class="section-title">Who I Am</h2>
-            <div class="about-grid">
-                <div class="about-left">
-                    <div class="about-image">
-                        <div class="image-placeholder">RB</div>
-                        <div class="image-decoration"></div>
+    <!-- Experience Section -->
+    <section id="experience">
+        <div class="section-header">
+            <h2 class="section-title"><span class="gradient">Experience</span> Journey</h2>
+            <p class="section-subtitle">
+                My professional path showcasing growth, leadership, and real-world impact.
+            </p>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <div class="timeline-year">2026 — Present</div>
+                <div class="timeline-content">
+                    <h3>Brand Ambassador</h3>
+                    <div class="timeline-company">Canva • Birmingham, UK</div>
+                    <div class="timeline-desc">
+                        Selected as a Gen C Canva Ambassador. Driving peer adoption through campus activations, product demonstrations, and structured feedback to product team.
                     </div>
                 </div>
-                <div class="about-right">
-                    <div class="about-card">
-                        <h3>MSc Management Candidate</h3>
-                        <p>University of Birmingham | Entrepreneurial Focus</p>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">Jun — Sep 2025</div>
+                <div class="timeline-content">
+                    <h3>Marketing & Content Intern</h3>
+                    <div class="timeline-company">Silver Fern Education • Chandigarh</div>
+                    <div class="timeline-desc">
+                        Created 10+ SEO-optimized blog posts and 30+ social media assets. Improved keyword rankings and organic reach by 40% through strategic content planning.
                     </div>
-                    <p class="about-text">
-                        I blend strategic thinking with creative execution. As the founder of <strong>Escalate</strong> — a social media marketing agency — 
-                        I've learned that great outcomes come from understanding data, connecting with people, and building brands that matter.
-                    </p>
-                    <p class="about-text">
-                        My journey spans brand marketing, digital strategy, business operations, and financial analysis. Whether it's launching a startup, 
-                        optimizing workflows, or crafting campaigns that convert — I'm driven by impact.
-                    </p>
-                    <div class="about-stats">
-                        <div class="stat">
-                            <span class="stat-number">2+</span>
-                            <span class="stat-label">Years Building</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number">10+</span>
-                            <span class="stat-label">Client Success</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-number">20%</span>
-                            <span class="stat-label">Efficiency Gains</span>
-                        </div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">Apr — Jun 2024</div>
+                <div class="timeline-content">
+                    <h3>Social Media Marketing Intern</h3>
+                    <div class="timeline-company">YouVah • India</div>
+                    <div class="timeline-desc">
+                        Developed platform-specific social strategies. Monitored analytics and compiled performance reports for informed stakeholder decision-making.
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <div class="timeline-year">Jul — Dec 2024</div>
+                <div class="timeline-content">
+                    <h3>Operations & Finance Intern</h3>
+                    <div class="timeline-company">Assam Wood & Allied • Yamunanagar</div>
+                    <div class="timeline-desc">
+                        Led workflow optimization contributing to 20% efficiency improvement. Conducted sustainability assessments with two proposals adopted by management.
                     </div>
                 </div>
             </div>
@@ -115,209 +711,156 @@
     </section>
 
     <!-- Work Section -->
-    <section id="work" class="work">
-        <div class="section-container">
-            <h2 class="section-title">My Experience</h2>
-            
-            <div class="work-timeline">
-                <!-- Work Item 1 -->
-                <div class="work-item">
-                    <div class="work-marker"></div>
-                    <div class="work-content">
-                        <div class="work-header">
-                            <h3>Brand Ambassador · Canva</h3>
-                            <span class="work-date">Mar 2026 – Present</span>
-                        </div>
-                        <p>Selected as a Gen C Canva Ambassador, representing the brand through product testing, activations, and community building at the University of Birmingham.</p>
-                        <div class="work-tags">
-                            <span class="tag">Product Strategy</span>
-                            <span class="tag">Brand Advocacy</span>
-                            <span class="tag">Community</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Work Item 2 -->
-                <div class="work-item">
-                    <div class="work-marker"></div>
-                    <div class="work-content">
-                        <div class="work-header">
-                            <h3>Co-Founder & Strategy Lead · Escalate</h3>
-                            <span class="work-date">2023 – Present</span>
-                        </div>
-                        <p>Founded a boutique social media marketing agency. Managed full client lifecycle — from acquisition through campaign execution, delivering content strategy, paid social, and influencer campaigns.</p>
-                        <div class="work-tags">
-                            <span class="tag">Entrepreneurship</span>
-                            <span class="tag">Strategy</span>
-                            <span class="tag">Growth Marketing</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Work Item 3 -->
-                <div class="work-item">
-                    <div class="work-marker"></div>
-                    <div class="work-content">
-                        <div class="work-header">
-                            <h3>Marketing & Content Intern · Silver Fern Education</h3>
-                            <span class="work-date">Jun – Sep 2025</span>
-                        </div>
-                        <p>Authored 10+ SEO-optimised blogs and produced 30+ social media posts. Analysed platform analytics to align content with audience behaviour and business goals.</p>
-                        <div class="work-tags">
-                            <span class="tag">Content Strategy</span>
-                            <span class="tag">SEO</span>
-                            <span class="tag">Analytics</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Work Item 4 -->
-                <div class="work-item">
-                    <div class="work-marker"></div>
-                    <div class="work-content">
-                        <div class="work-header">
-                            <h3>Operations & Accounts Intern · Assam Wood and Allied Products</h3>
-                            <span class="work-date">Jul – Dec 2024</span>
-                        </div>
-                        <p>Led workflow optimisation initiatives contributing to 20% efficiency improvement. Conducted sustainability assessments and managed financial records for 50+ monthly transactions.</p>
-                        <div class="work-tags">
-                            <span class="tag">Operations</span>
-                            <span class="tag">Sustainability</span>
-                            <span class="tag">Finance</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <section id="work">
+        <div class="section-header">
+            <h2 class="section-title">Featured <span class="gradient">Work</span></h2>
+            <p class="section-subtitle">
+                Highlights of projects and initiatives that showcase strategic thinking and execution excellence.
+            </p>
         </div>
-    </section>
 
-    <!-- Skills Section -->
-    <section id="skills" class="skills">
-        <div class="section-container">
-            <h2 class="section-title">Core Expertise</h2>
-            
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <div class="skill-icon">🎯</div>
-                    <h3>Brand & Marketing</h3>
-                    <ul>
-                        <li>Brand Positioning</li>
-                        <li>Campaign Strategy</li>
-                        <li>Consumer Insight</li>
-                        <li>Growth Marketing</li>
-                    </ul>
-                </div>
-
-                <div class="skill-card">
-                    <div class="skill-icon">💻</div>
-                    <h3>Digital & Content</h3>
-                    <ul>
-                        <li>Social Media Strategy</li>
-                        <li>Paid Social & SEO</li>
-                        <li>Analytics & Data</li>
-                        <li>Content Marketing</li>
-                    </ul>
-                </div>
-
-                <div class="skill-card">
-                    <div class="skill-icon">💼</div>
-                    <h3>Sales & Strategy</h3>
-                    <ul>
-                        <li>Client Acquisition</li>
-                        <li>Market Research</li>
-                        <li>Stakeholder Mgmt</li>
-                        <li>Pitching & Consulting</li>
-                    </ul>
-                </div>
-
-                <div class="skill-card">
-                    <div class="skill-icon">✨</div>
-                    <h3>Luxury & Experience</h3>
-                    <ul>
-                        <li>Premium Brand Identity</li>
-                        <li>Trend Forecasting</li>
-                        <li>E-Commerce Strategy</li>
-                        <li>User Experience</li>
-                    </ul>
-                </div>
+        <div class="grid-layout">
+            <div class="grid-item">
+                <h3>Escalate Agency</h3>
+                <p>Founded a boutique social media marketing agency helping SMEs build authentic brands through strategic content, paid advertising, and influencer partnerships.</p>
+                <span class="grid-item-tag">Entrepreneurship</span>
             </div>
-
-            <div class="tools-section">
-                <h3>Tools & Tech</h3>
-                <div class="tools-list">
-                    <span class="tool">Excel</span>
-                    <span class="tool">Python</span>
-                    <span class="tool">Google Analytics</span>
-                    <span class="tool">Meta Business Suite</span>
-                    <span class="tool">Canva</span>
-                    <span class="tool">Figma</span>
-                </div>
+            <div class="grid-item">
+                <h3>Silver Fern Growth</h3>
+                <p>Scaled organic reach by 40% through SEO strategy and targeted social campaigns. Built brand awareness across Gen Z audience.</p>
+                <span class="grid-item-tag">Growth Marketing</span>
             </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="projects">
-        <div class="section-container">
-            <h2 class="section-title">Featured Projects</h2>
-            
-            <div class="projects-showcase">
-                <div class="project-large">
-                    <div class="project-image" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
-                    <div class="project-details">
-                        <h3>Escalate Agency</h3>
-                        <p>Built a full-service social media marketing agency from scratch, delivering campaigns for 10+ SMEs across multiple industries with 20%+ engagement growth.</p>
-                        <div class="project-meta">
-                            <span>Entrepreneurship</span>
-                            <span>Digital Strategy</span>
-                            <span>Growth</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="project-small">
-                    <div class="project-image" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
-                    <h4>Content Strategy</h4>
-                    <p>Created 30+ viral social posts and 10+ SEO blogs improving reach and rankings</p>
-                </div>
-
-                <div class="project-small">
-                    <div class="project-image" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
-                    <h4>Operations Optimization</h4>
-                    <p>Led efficiency improvements achieving 20% workflow optimization across teams</p>
-                </div>
+            <div class="grid-item">
+                <h3>Market Research Project</h3>
+                <p>Comprehensive consumer insight analysis for luxury brand positioning and market differentiation strategies.</p>
+                <span class="grid-item-tag">Research</span>
             </div>
         </div>
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="section-container">
-            <h2 class="section-title">Let's Create Together</h2>
-            <p class="contact-subtitle">I'm always interested in discussing new projects, ideas, and opportunities.</p>
-            
-            <div class="contact-options">
-                <a href="mailto:ruhani@example.com" class="contact-btn" data-sound="click">
-                    <span class="icon">✉️</span>
-                    <span>Email Me</span>
-                </a>
-                <a href="https://linkedin.com" target="_blank" class="contact-btn" data-sound="click">
-                    <span class="icon">💼</span>
-                    <span>LinkedIn</span>
-                </a>
-                <a href="https://instagram.com" target="_blank" class="contact-btn" data-sound="click">
-                    <span class="icon">📱</span>
-                    <span>Instagram</span>
-                </a>
+    <section id="contact">
+        <footer>
+            <div class="footer-content">
+                <h2 class="footer-title">Let's <span class="gradient">Connect</span></h2>
+                <p class="footer-text">
+                    Always interested in hearing about new projects, collaborations, and opportunities. Let's work together to create something amazing.
+                </p>
+                <div class="footer-links">
+                    <a href="mailto:ruhanibajaj1@gmail.com" class="footer-link">📧 Email</a>
+                    <a href="https://linkedin.com/in/ruhani-bajajrb" target="_blank" class="footer-link">💼 LinkedIn</a>
+                    <a href="tel:+4407352685719" class="footer-link">📱 Phone</a>
+                </div>
             </div>
-        </div>
+        </footer>
     </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <p>Crafted with creativity & precision © 2026 Ruhani Bajaj</p>
-    </footer>
+    <script>
+        // ════════════════════════════════════════════════════════════
+        // SOUND EFFECTS
+        // ════════════════════════════════════════════════════════════
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-    <script src="script.js"></script>
+        function playScrollSound() {
+            const now = audioContext.currentTime;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(200, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+            
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            
+            osc.start(now);
+            osc.stop(now + 0.2);
+        }
+
+        function playSelectionSound() {
+            const now = audioContext.currentTime;
+            const osc = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            osc.connect(gain);
+            gain.connect(audioContext.destination);
+
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(800, now);
+            osc.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+            
+            gain.gain.setValueAtTime(0.15, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            
+            osc.start(now);
+            osc.stop(now + 0.1);
+        }
+
+        // ════════════════════════════════════════════════════════════
+        // PRELOADER
+        // ════════════════════════════════════════════════════════════
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+                playSelectionSound();
+            }, 1500);
+        });
+
+        // ════════════════════════════════════════════════════════════
+        // CURSOR
+        // ════════════════════════════════════════════════════════════
+        const cursor = document.querySelector('.cursor-dot');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // ════════════════════════════════════════════════════════════
+        // CURSOR ACTIVE ON HOVER
+        // ════════════════════════════════════════════════════════════
+        document.querySelectorAll('a, button, .grid-item').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('active');
+                playSelectionSound();
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('active');
+            });
+        });
+
+        // ════════════════════════════════════════════════════════════
+        // SMOOTH SCROLL WITH SOUND
+        // ════════════════════════════════════════════════════════════
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                playScrollSound();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // ════════════════════════════════════════════════════════════
+        // SCROLL ARROW CLICK
+        // ════════════════════════════════════════════════════════════
+        document.querySelector('.scroll-arrow').addEventListener('click', () => {
+            playScrollSound();
+            document.querySelector('.marquee-section').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // ════════════════════════════════════════════════════════════
+        // BUTTON CLICK SOUNDS
+        // ════════════════════════════════════════════════════════════
+        document.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                playSelectionSound();
+            });
+        });
+    </script>
 </body>
 </html>
